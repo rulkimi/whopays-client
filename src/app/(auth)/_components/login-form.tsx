@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import z from "zod";
 import { useForm } from "react-hook-form";
@@ -12,13 +13,14 @@ import { CardFooter } from "@/components/ui/card";
 import { logIn } from "@/actions/auth";
 
 const loginFormSchema = z.object({
-	email: z.string().email({ message: "Enter a valid email address." }),
+	email: z.email({ message: "Enter a valid email address." }),
 	password: z.string().min(8, { message: "Password must be at least 8 characters." })
 });
 
 type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
+	const router = useRouter();
 	const form = useForm<LoginFormSchema>({
 		resolver: zodResolver(loginFormSchema),
 		defaultValues: {
@@ -32,6 +34,7 @@ export default function LoginForm() {
 		console.log(response);
 		if (response && response.access_token) {
 			document.cookie = `access_token=${response.access_token}; path=/;`;
+			router.push("/home");
 		}
 	};
 
