@@ -32,3 +32,8 @@ interface Receipt {
   created_at: string;
   updated_at: string;
 }
+
+interface DashboardData {
+  friends: Friend[];
+  receipts: Receipt[];
+}

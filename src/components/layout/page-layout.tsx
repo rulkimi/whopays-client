@@ -2,6 +2,7 @@ import React, { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { ChevronLeft } from "lucide-react"
 
 export function PageLayout({
 	children,
@@ -25,7 +26,7 @@ export function PageLayout({
 export function PageHeader({
 	children,
 	className,
-	backHref = "/",
+	backHref,
 	backLabel = "Back",
 }: {
 	children: ReactNode
@@ -62,42 +63,29 @@ export function PageHeader({
 			)}
 		>
 			<div className="flex items-center w-full relative h-full max-w-4xl mx-auto">
-				<Link
-					href={backHref}
-					className={cn(
-						"absolute left-0 top-0 z-10 h-full flex items-center px-4 text-[17px] font-medium text-primary active:opacity-60 transition-opacity",
-						"select-none",
-						"tap-transparent",
-						"tracking-[0]"
-					)}
-					style={{
-						WebkitTapHighlightColor: "transparent",
-					}}
-				>
-					<span
+				{backHref && (
+					<Link
+						href={backHref}
 						className={cn(
-							"inline-flex items-center font-normal text-[17px] leading-[22px]"
+							"absolute left-0 top-0 z-10 h-full flex items-center px-4 text-[17px] font-medium text-primary active:opacity-60 transition-opacity",
+							"select-none",
+							"tap-transparent",
+							"tracking-[0]"
 						)}
+						style={{
+							WebkitTapHighlightColor: "transparent",
+						}}
 					>
-						<svg
-							width="20"
-							height="20"
-							viewBox="0 0 20 20"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-							className="mr-1"
+						<span
+							className={cn(
+								"inline-flex items-center font-normal text-[17px] leading-[22px]"
+							)}
 						>
-							<path
-								d="M13 16L7 10L13 4"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							/>
-						</svg>
-						{backLabel}
-					</span>
-				</Link>
+							<ChevronLeft className="mr-1" size={20} />
+							{backLabel}
+						</span>
+					</Link>
+				)}
 				<div className="flex-1 flex items-center justify-center relative h-full">
 					{title && (
 						<div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
