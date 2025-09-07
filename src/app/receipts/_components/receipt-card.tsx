@@ -31,7 +31,7 @@ export default function ReceiptCard({
     : `${receipt.friends.length} ${receipt.friends.length === 1 ? "person" : "persons"}`;
 
 	return (
-		<Card className={cardClass}>
+		<Card className={cn("hover:bg-muted/10 cursor-pointer", cardClass)}>
       <CardHeader>
         <CardTitle className="flex gap-1 justify-between">
           <span>{receipt.restaurant_name}</span>

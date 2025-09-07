@@ -6,12 +6,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = "USD", locale: string = "en-US"): string {
-	return new Intl.NumberFormat(locale, {
-		style: "currency",
-		currency,
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2
-	}).format(amount);
+	let formatted: string;
+	try {
+		formatted = new Intl.NumberFormat(locale, {
+			style: "currency",
+			currency,
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(amount);
+	} catch (e) {
+		// If invalid currency, fallback to MYR
+		formatted = new Intl.NumberFormat(locale, {
+			style: "currency",
+			currency: "MYR",
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(amount);
+	}
+	return formatted;
 }
 
 export function formatDateTime(dateString: string): string {
