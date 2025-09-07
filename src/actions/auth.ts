@@ -19,6 +19,9 @@ export async function logIn({ email, password }: AuthFormData) {
 		formData.append("username", email);
 		formData.append("password", password);
 
+    console.log(process.env.API_URL)
+
+
 		const response = await api.post("/auth/login", formData);
 		return response.data;
 	} catch (error) {
