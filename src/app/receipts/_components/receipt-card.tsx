@@ -40,7 +40,7 @@ export default function ReceiptCard({
           </span>
         </CardTitle>
       </CardHeader>
-			<CardContent className="py-3">
+			<CardContent className="">
         <div className="flex justify-between">
           <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="size-4" />

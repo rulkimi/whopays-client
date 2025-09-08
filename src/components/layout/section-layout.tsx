@@ -23,7 +23,7 @@ export function SectionHeader({
 	className?: string
 }) {
 	return (
-		<header className={cn("flex items-center px-8 pt-4 pb-2", className)}>
+		<header className={cn("flex items-center px-4 pb-2", className)}>
 			{children}
 		</header>
 	)
@@ -57,7 +57,7 @@ export function SectionContent({
 	className?: string
 }) {
 	return (
-		<div className={cn("px-4 pb-4", className)}>
+		<div className={cn("", className)}>
 			{children}
 		</div>
 	)
