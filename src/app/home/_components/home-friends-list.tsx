@@ -1,3 +1,5 @@
+"use client"
+
 import FriendAvatar from "@/components/friend-avatar";
 import { Section, SectionContent, SectionHeader, SectionTitle } from "@/components/layout/section-layout";
 import { AvatarGroup } from "@/components/ui/avatar";
