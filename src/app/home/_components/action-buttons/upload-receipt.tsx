@@ -12,54 +12,78 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { cn, convertToBase64 } from "@/lib/utils";
 import FriendAvatar from "@/components/friend-avatar";
 import { uploadReceipt } from "@/actions/receipt";
 import { Friend } from "@/types";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+	Form,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormControl,
+	FormMessage,
+} from "@/components/ui/form";
+
+const uploadReceiptSchema = z.object({
+	friends: z.array(z.number()).min(1, "Select at least one friend"),
+	file: z
+		.instanceof(File)
+		.refine((file) => !!file, { message: "A file is required" }),
+});
+
+type UploadReceiptFormValues = z.infer<typeof uploadReceiptSchema>;
 
 export default function UploadReceipt({
-	friends
+	friends,
 }: {
-	friends: Friend[]
+	friends: Friend[];
 }) {
 	const [open, setOpen] = useState(false);
-	const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
-	const [file, setFile] = useState<File | null>(null);
+
+	const form = useForm<UploadReceiptFormValues>({
+		resolver: zodResolver(uploadReceiptSchema),
+		defaultValues: {
+			friends: [],
+			file: undefined,
+		},
+	});
+
+	const selectedFriends = form.watch("friends");
+	const file = form.watch("file");
 
 	const handleFriendToggle = (id: number) => {
-		setSelectedFriends((prev) =>
-			prev.includes(id)
-				? prev.filter((fid) => fid !== id)
-				: [...prev, id]
-		);
-	};
-
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setFile(e.target.files[0]);
-		}
-	};
-
-
-
-	const handleSubmit = () => {
-		console.log("Selected friends:", selectedFriends);
-		if (file) {
-			convertToBase64(file, async (result) => {
-				console.log("File metadata with base64:", result);
-				// You can now use result as needed
-
-        await uploadReceipt(result, selectedFriends);
-				setOpen(false);
-				setSelectedFriends([]);
-				setFile(null);
-			});
+		const current = selectedFriends || [];
+		if (current.includes(id)) {
+			form.setValue(
+				"friends",
+				current.filter((fid: number) => fid !== id),
+				{ shouldValidate: true }
+			);
 		} else {
-			setOpen(false);
-			setSelectedFriends([]);
-			setFile(null);
+			form.setValue("friends", [...current, id], { shouldValidate: true });
 		}
+	};
+
+	const onSubmit = async (data: UploadReceiptFormValues) => {
+		if (data.file) {
+			await new Promise<void>((resolve) => {
+				convertToBase64(data.file, async (result) => {
+					await uploadReceipt(result, data.friends);
+					resolve();
+				});
+			});
+		}
+		setOpen(false);
+		form.reset();
+	};
+
+	const handleDialogClose = () => {
+		setOpen(false);
+		form.reset();
 	};
 
 	return (
@@ -83,59 +107,84 @@ export default function UploadReceipt({
 					<DialogHeader>
 						<DialogTitle>Upload Receipt</DialogTitle>
 					</DialogHeader>
-					<div className="space-y-4">
-						<div>
-							<Label className="mb-2 block">Add Friends</Label>
-							<div className="flex flex-wrap gap-2">
-								{friends.map((friend) => (
-									<button
-										type="button"
-										key={friend.id}
-										className={cn(
-											"pl-1 pr-2 py-1 rounded-full border transition flex items-center gap-1",
-											selectedFriends.includes(friend.id)
-												? "bg-primary text-primary-foreground border-primary"
-												: "bg-muted text-muted-foreground border-muted"
-										)}
-										onClick={() => handleFriendToggle(friend.id)}
-									>
-										<FriendAvatar friend={friend} />
-										<span>{friend.name}</span>
-									</button>
-								))}
-							</div>
-						</div>
-						<div>
-							<Label htmlFor="receipt-upload" className="mb-2 block">
-								Upload Image
-							</Label>
-							<Input
-								id="receipt-upload"
-								type="file"
-								accept="image/*"
-								onChange={handleFileChange}
-							/>
-							{file && (
-								<div className="mt-2 text-sm text-muted-foreground">
-									Selected: {file.name}
-								</div>
-							)}
-						</div>
-					</div>
-					<DialogFooter>
-						<DialogClose asChild>
-							<Button variant="outline" type="button">
-								Cancel
-							</Button>
-						</DialogClose>
-						<Button
-							type="button"
-							onClick={handleSubmit}
-							disabled={!file}
+					<Form {...form}>
+						<form
+							onSubmit={form.handleSubmit(onSubmit)}
+							className="space-y-4"
 						>
-							Submit
-						</Button>
-					</DialogFooter>
+							<FormField
+								control={form.control}
+								name="friends"
+								render={() => (
+									<FormItem>
+										<FormLabel>Add Friends</FormLabel>
+										<div className="flex flex-wrap gap-2">
+											{friends.map((friend) => (
+												<button
+													type="button"
+													key={friend.id}
+													className={cn(
+														"pl-1 pr-2 py-1 rounded-full border transition flex items-center gap-1",
+														selectedFriends?.includes(friend.id)
+															? "bg-primary text-primary-foreground border-primary"
+															: "bg-muted text-muted-foreground border-muted"
+													)}
+													onClick={() => handleFriendToggle(friend.id)}
+												>
+													<FriendAvatar friend={friend} />
+													<span>{friend.name}</span>
+												</button>
+											))}
+										</div>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="file"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel htmlFor="receipt-upload">Upload Image</FormLabel>
+										<FormControl>
+											<Input
+												id="receipt-upload"
+												type="file"
+												accept="image/*"
+												onChange={(e) => {
+													const file = e.target.files?.[0];
+													field.onChange(file);
+												}}
+											/>
+										</FormControl>
+										{file && (
+											<div className="mt-2 text-sm text-muted-foreground">
+												Selected: {file.name}
+											</div>
+										)}
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<DialogFooter>
+								<DialogClose asChild>
+									<Button
+										variant="outline"
+										type="button"
+										onClick={handleDialogClose}
+									>
+										Cancel
+									</Button>
+								</DialogClose>
+								<Button
+									type="submit"
+									disabled={form.formState.isSubmitting}
+								>
+									Submit
+								</Button>
+							</DialogFooter>
+						</form>
+					</Form>
 				</DialogContent>
 			</Dialog>
 		</>
