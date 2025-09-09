@@ -1,3 +1,4 @@
+import { Base64File } from "@/types";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -14,7 +15,7 @@ export function formatCurrency(amount: number, currency: string = "USD", locale:
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 2
 		}).format(amount);
-	} catch (e) {
+	} catch {
 		// If invalid currency, fallback to MYR
 		formatted = new Intl.NumberFormat(locale, {
 			style: "currency",
@@ -35,4 +36,46 @@ export function formatDateTime(dateString: string): string {
 	const day = String(date.getDate()).padStart(2, "0");
 
 	return `${year}-${month}-${day}`;
+}
+
+export interface Base64FileResult {
+	name: string;
+	type: string;
+	size: number;
+	lastModified: number;
+	base64: string;
+}
+
+export const convertToBase64 = (
+	file: File,
+	callback: (result: Base64FileResult) => void
+) => {
+	const reader = new FileReader();
+	reader.onloadend = () => {
+		const base64String = reader.result as string;
+		const result: Base64FileResult = {
+			name: file.name,
+			type: file.type,
+			size: file.size,
+			lastModified: file.lastModified,
+			base64: base64String,
+		};
+		callback(result);
+	};
+	reader.readAsDataURL(file);
+};
+
+export function base64ToFile(base64File: Base64File): File {
+	const arr = base64File.base64.split(',');
+	const mime = arr[0].match(/:(.*?);/)?.[1] || '';
+	const bstr = atob(arr[1]);
+	let n = bstr.length;
+	const u8arr = new Uint8Array(n);
+	while (n--) {
+		u8arr[n] = bstr.charCodeAt(n);
+	}
+	return new File([u8arr], base64File.name, {
+		type: mime,
+		lastModified: base64File.lastModified
+	});
 }

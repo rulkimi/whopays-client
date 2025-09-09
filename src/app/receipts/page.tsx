@@ -6,6 +6,7 @@ import {
   PageTitle,
 } from "@/components/layout/page-layout";
 import ReceiptList from "./_components/receipt-list";
+import { Receipt } from "@/types";
 
 export default async function ReceiptsPage() {
   const receipts: Receipt[] = await fetchReceipts();

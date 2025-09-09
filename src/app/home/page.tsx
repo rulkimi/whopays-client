@@ -7,6 +7,8 @@ import {
 } from "@/components/layout/page-layout";
 import ReceiptList from "../receipts/_components/receipt-list";
 import HomeFriendsList from "./_components/home-friends-list";
+import UploadReceipt from "./_components/action-buttons/upload-receipt";
+import { DashboardData } from "@/types";
 
 export default async function HomePage() {
   const dashboard: DashboardData = await fetchDashboard();
@@ -16,6 +18,9 @@ export default async function HomePage() {
         <PageTitle>Home</PageTitle>
       </PageHeader>
       <PageContent className="space-y-4">
+        <div>
+          <UploadReceipt friends={dashboard.friends} />
+        </div>
         <HomeFriendsList friends={dashboard.friends} />
         <ReceiptList
           receipts={dashboard.receipts} 

@@ -43,7 +43,7 @@ export default function SignupForm() {
 		}
 	};
 
-	const onError = (errors: any) => {
+	const onError = (errors: unknown) => {
 		console.log(errors);
 	};
 

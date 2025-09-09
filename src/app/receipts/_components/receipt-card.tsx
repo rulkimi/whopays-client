@@ -2,6 +2,7 @@ import FriendAvatar from "@/components/friend-avatar";
 import { AvatarGroup } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, formatCurrency, formatDateTime } from "@/lib/utils"
+import { Receipt } from "@/types";
 import { Calendar, Users } from "lucide-react";
 import React from "react"
 

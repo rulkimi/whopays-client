@@ -3,6 +3,7 @@ import { Section, SectionContent, SectionHeader, SectionTitle } from "@/componen
 import { AvatarGroup } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Friend } from "@/types";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -37,7 +38,7 @@ export default function HomeFriendsList({
         <Card>
           <CardContent>
             <AvatarGroup>
-              {friends.map((friend, idx) => (
+              {friends.map((friend) => (
                 <FriendAvatar key={friend.id} friend={friend} />
               ))}
             </AvatarGroup>

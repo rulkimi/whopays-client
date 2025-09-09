@@ -37,11 +37,12 @@ export function PageHeader({
 	// Helper to check if a child is a PageTitle
 	const getPageTitle = (children: ReactNode) => {
 		let title = null;
-		let rest: ReactNode[] = [];
+		const rest: ReactNode[] = [];
 		React.Children.forEach(children, (child) => {
 			if (
 				React.isValidElement(child) &&
-				(child.type as any).displayName === "PageTitle"
+				child.type &&
+				(child.type as { displayName?: string }).displayName === "PageTitle"
 			) {
 				title = child;
 			} else {

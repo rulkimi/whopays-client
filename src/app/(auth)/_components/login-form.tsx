@@ -38,7 +38,7 @@ export default function LoginForm() {
 		}
 	};
 
-	const onError = (errors: any) => {
+	const onError = (errors: unknown) => {
 		console.log(errors);
 	};
 

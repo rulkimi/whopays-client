@@ -1,16 +1,14 @@
-import { getFileUrl } from "@/actions/file"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Friend } from "@/types"
 
-export default async function FriendAvatar({ friend }: { friend: Friend }) {
-	const imageUrl = await getFileUrl(friend.photo_url);
-
+export default function FriendAvatar({ friend }: { friend: Friend }) {
 	return (
 		<TooltipProvider>
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Avatar className="border-2">
-						<AvatarImage src={imageUrl} alt={friend.name} />
+						<AvatarImage src={friend.photo_url} alt={friend.name} />
 						<AvatarFallback>
 							{friend.name
 								.split(" ")

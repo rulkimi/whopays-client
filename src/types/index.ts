@@ -1,16 +1,16 @@
-interface Friend {
+export interface Friend {
   id: number;
   user_id: number;
   name: string;
   photo_url: string;
 }
 
-interface Variation {
+export interface Variation {
   variation_name: string;
   price: number;
 }
 
-interface Item {
+export interface Item {
   item_id: number;
   friends: Friend[];
   item_name: string;
@@ -18,7 +18,7 @@ interface Item {
   variation: Variation[];
 }
 
-interface Receipt {
+export interface Receipt {
   id: number;
   user_id: number;
   currency: string;
@@ -33,7 +33,15 @@ interface Receipt {
   updated_at: string;
 }
 
-interface DashboardData {
+export interface DashboardData {
   friends: Friend[];
   receipts: Receipt[];
+}
+
+export interface Base64File {
+  name: string;
+  type: string;
+  size: number;
+  lastModified: number;
+  base64: string;
 }
