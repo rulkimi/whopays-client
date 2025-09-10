@@ -24,6 +24,8 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 					<Image
 						src={receiptUrl}
 						alt="Original Receipt"
+            width={100}
+            height={100}
 						className="rounded-xl max-h-72 w-auto object-contain border border-gray-200 shadow-lg transition-all duration-200 group-hover:shadow-xl group-hover:scale-[1.02]"
 						style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
 					/>
@@ -63,6 +65,8 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 						<Image
 							src={receiptUrl}
 							alt="Original Receipt - Full Size"
+              width={100}
+              height={100}
 							className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
 							style={{ 
 								maxHeight: "calc(90vh - 120px)",

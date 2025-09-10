@@ -16,9 +16,9 @@ import { Item } from "@/types";
 export default async function ReceiptPage({
 	params,
 }: {
-	params: { receiptId: string };
+	params: Promise<{ receiptId: string }>;
 }) {
-	const { receiptId } = params;
+	const { receiptId } = await params;
 	const receipt = await fetchReceiptById(receiptId);
 
 	const persons =
@@ -96,7 +96,12 @@ export default async function ReceiptPage({
 								</div>
 								<div className="flex flex-col gap-3">
 									{receipt.items.map((item: Item) => (
-										<ItemInfo key={item.item_id} item={item} currency={receipt.currency} />
+										<ItemInfo
+                      key={item.item_id} 
+                      item={item} 
+                      currency={receipt.currency} 
+                      allFriends={receipt.friends}
+                    />
 									))}
 								</div>
 							</div>

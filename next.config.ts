@@ -5,4 +5,10 @@ module.exports = {
 			bodySizeLimit: '10mb',
 		},
 	},
+	images: {
+		domains: [
+			'127.0.0.1',
+			'bucket.railway.internal'
+		],
+	},
 }
