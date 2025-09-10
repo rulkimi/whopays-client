@@ -2,7 +2,7 @@
 
 import { base64ToFile } from "@/lib/utils";
 import { getApiClient } from "./api";
-import { Base64File } from "@/types";
+import { Base64File, Receipt } from "@/types";
 
 export async function fetchReceipts() {
 	try {
@@ -12,6 +12,17 @@ export async function fetchReceipts() {
 	} catch (error) {
 		throw error;
 	}
+}
+
+export async function fetchReceiptById(receiptId: string): Promise<Receipt> {
+  try {
+    const api = await getApiClient();
+    const response = await api.get(`/receipts/${receiptId}`);
+    return response.data;
+  } catch (error) {
+    console.log(error)
+    throw error;
+  }
 }
 
 export async function uploadReceipt(

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, formatCurrency, formatDateTime } from "@/lib/utils"
 import { Receipt } from "@/types";
 import { Calendar, Users } from "lucide-react";
+import Link from "next/link";
 import React from "react"
 
 type ReceiptCardProps = {
@@ -32,32 +33,34 @@ export default function ReceiptCard({
     : `${receipt.friends.length} ${receipt.friends.length === 1 ? "person" : "persons"}`;
 
 	return (
-		<Card className={cn("hover:bg-muted/10 cursor-pointer", cardClass)}>
-      <CardHeader>
-        <CardTitle className="flex gap-1 justify-between">
-          <span>{receipt.restaurant_name}</span>
-          <span className="text-primary font-normal">
-            {formatCurrency(receipt.total_amount, receipt.currency)}
-          </span>
-        </CardTitle>
-      </CardHeader>
-			<CardContent className="">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Calendar className="size-4" />
-            <span>{formatDateTime(receipt.created_at)}</span>
+		<Link href={`/receipts/${receipt.id}`}>
+      <Card className={cn("hover:bg-muted/10 cursor-pointer", cardClass)}>
+        <CardHeader>
+          <CardTitle className="flex gap-1 justify-between">
+            <span>{receipt.restaurant_name}</span>
+            <span className="text-primary font-normal">
+              {formatCurrency(receipt.total_amount, receipt.currency)}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="">
+          <div className="flex justify-between">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Calendar className="size-4" />
+              <span>{formatDateTime(receipt.created_at)}</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Users className="size-4" />
+              <span>{persons}</span>
+              <AvatarGroup>
+                {receipt.friends.map(friend => (
+                  <FriendAvatar key={friend.id} friend={friend} />
+                ))}
+              </AvatarGroup>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Users className="size-4" />
-            <span>{persons}</span>
-            <AvatarGroup>
-              {receipt.friends.map(friend => (
-                <FriendAvatar key={friend.id} friend={friend} />
-              ))}
-            </AvatarGroup>
-          </div>
-        </div>
-      </CardContent>
-		</Card>
+        </CardContent>
+      </Card>
+    </Link>
 	)
 }

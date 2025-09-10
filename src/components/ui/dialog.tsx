@@ -38,7 +38,7 @@ function DialogContent({
 			<DialogPrimitive.Content
 				data-slot="dialog-content"
 				className={cn(
-					"fixed left-1/2 z-50 w-full max-w-[420px] sm:max-w-[380px] bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl transition-all duration-200",
+					"fixed left-1/2 z-50 w-full max-w-5xl bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl transition-all duration-200",
 					"backdrop-blur-[16px] border border-white/40 dark:border-neutral-800/60",
 					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
 					// Bottom sheet on mobile, centered on desktop

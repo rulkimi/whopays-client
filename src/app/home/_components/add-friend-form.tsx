@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn, convertToBase64 } from "@/lib/utils"
+import { convertToBase64 } from "@/lib/utils"
 import { createFriend } from "@/actions/friend"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -55,7 +55,7 @@ export default function AddFriendForm({
 			})
 			form.reset()
 			if (onSuccess) onSuccess()
-		} catch (e) {
+		} catch {
 			// Optionally handle error
 		} finally {
 			setSubmitting(false)

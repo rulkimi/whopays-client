@@ -15,6 +15,7 @@ export interface Item {
   friends: Friend[];
   item_name: string;
   quantity: number;
+  unit_price: number;
   variation: Variation[];
 }
 
@@ -28,6 +29,7 @@ export interface Receipt {
   tax: number;
   total_amount: number;
   friends: Friend[];
+  items: Item[];
 
   created_at: string;
   updated_at: string;
