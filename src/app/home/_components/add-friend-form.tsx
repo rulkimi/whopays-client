@@ -44,23 +44,27 @@ export default function AddFriendForm({
 
 	const file = form.watch("file")
 
-	const onSubmit = async (data: AddFriendFormValues) => {
-		setSubmitting(true)
-		try {
-			await new Promise<void>((resolve) => {
-				convertToBase64(data.file, async (result) => {
-					await createFriend(data.name, result)
-					resolve()
-				})
-			})
-			form.reset()
-			if (onSuccess) onSuccess()
-		} catch {
-			// Optionally handle error
-		} finally {
-			setSubmitting(false)
-		}
-	}
+  const onSubmit = async (data: AddFriendFormValues) => {
+    setSubmitting(true)
+    try {
+      // Convert to base64 on the client side
+      const base64Result = await new Promise<string>((resolve) => {
+        convertToBase64(data.file, (result) => {
+          // Extract the base64 string from the result object
+          const base64String = typeof result === 'string' ? result : result.base64;
+          resolve(base64String)
+        })
+      })
+      
+      await createFriend(data.name, base64Result)
+      form.reset()
+      if (onSuccess) onSuccess()
+    } catch (error) {
+      console.error("Error:", error)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
 	return (
 		<Form {...form}>
