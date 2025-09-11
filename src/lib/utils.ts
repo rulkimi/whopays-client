@@ -50,10 +50,15 @@ export const convertToBase64 = (
 	file: { name: string; type: string; size: number; lastModified: number },
 	callback: (result: Base64FileResult) => void
 ) => {
-	if (typeof File === "undefined" || typeof FileReader === "undefined" || !(file instanceof Object)) {
+	if (
+		typeof window === "undefined" ||
+		typeof window.File === "undefined" ||
+		typeof window.FileReader === "undefined" ||
+		!(file instanceof Object)
+	) {
 		throw new ReferenceError("File or FileReader is not defined in this environment.");
 	}
-	const reader = new (globalThis.FileReader || (require && require('filereader')))();
+	const reader = new window.FileReader();
 	reader.onloadend = () => {
 		const base64String = reader.result as string;
 		const result: Base64FileResult = {
@@ -65,10 +70,8 @@ export const convertToBase64 = (
 		};
 		callback(result);
 	};
-	// @ts-ignore
 	if (typeof reader.readAsDataURL === "function") {
-		// @ts-ignore
-		reader.readAsDataURL(file);
+		reader.readAsDataURL(file as unknown as Blob);
 	} else {
 		throw new ReferenceError("readAsDataURL is not available in this environment.");
 	}
