@@ -31,8 +31,8 @@ import {
 const uploadReceiptSchema = z.object({
 	friends: z.array(z.number()).min(1, "Select at least one friend"),
 	file: z
-		.instanceof(File)
-		.refine((file) => !!file, { message: "A file is required" }),
+		.any()
+		.refine((file) => typeof window !== "undefined" && file instanceof window.File, { message: "A file is required" }),
 });
 
 type UploadReceiptFormValues = z.infer<typeof uploadReceiptSchema>;

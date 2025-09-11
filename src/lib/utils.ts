@@ -47,10 +47,13 @@ export interface Base64FileResult {
 }
 
 export const convertToBase64 = (
-	file: File,
+	file: { name: string; type: string; size: number; lastModified: number },
 	callback: (result: Base64FileResult) => void
 ) => {
-	const reader = new FileReader();
+	if (typeof File === "undefined" || typeof FileReader === "undefined" || !(file instanceof Object)) {
+		throw new ReferenceError("File or FileReader is not defined in this environment.");
+	}
+	const reader = new (globalThis.FileReader || (require && require('filereader')))();
 	reader.onloadend = () => {
 		const base64String = reader.result as string;
 		const result: Base64FileResult = {
@@ -62,7 +65,13 @@ export const convertToBase64 = (
 		};
 		callback(result);
 	};
-	reader.readAsDataURL(file);
+	// @ts-ignore
+	if (typeof reader.readAsDataURL === "function") {
+		// @ts-ignore
+		reader.readAsDataURL(file);
+	} else {
+		throw new ReferenceError("readAsDataURL is not available in this environment.");
+	}
 };
 
 export function base64ToFile(base64File: Base64File) {

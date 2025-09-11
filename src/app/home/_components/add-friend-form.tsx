@@ -20,9 +20,9 @@ import { DialogFooter, DialogClose } from "@/components/ui/dialog"
 
 const addFriendSchema = z.object({
 	name: z.string().min(1, "Name is required"),
-	file: z
-		.instanceof(File)
-		.refine((file) => !!file, { message: "A photo is required" }),
+  file: z
+  .any()
+  .refine((file) => typeof window !== "undefined" && file instanceof window.File, { message: "A photo is required" }),
 })
 
 type AddFriendFormValues = z.infer<typeof addFriendSchema>
