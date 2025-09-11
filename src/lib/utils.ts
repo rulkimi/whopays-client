@@ -65,7 +65,7 @@ export const convertToBase64 = (
 	reader.readAsDataURL(file);
 };
 
-export function base64ToFile(base64File: Base64File): File {
+export function base64ToFile(base64File: Base64File) {
 	const arr = base64File.base64.split(',');
 	const mime = arr[0].match(/:(.*?);/)?.[1] || '';
 	const bstr = atob(arr[1]);
