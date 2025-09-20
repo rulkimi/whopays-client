@@ -8,7 +8,7 @@ export default function FriendAvatar({ friend }: { friend: Friend }) {
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Avatar className="border-2">
-						<AvatarImage src={friend.photo_url} alt={friend.name} />
+						<AvatarImage src={`/api/file/${friend.photo_url}`} alt={friend.name} />
 						<AvatarFallback>
 							{friend.name
 								.split(" ")
