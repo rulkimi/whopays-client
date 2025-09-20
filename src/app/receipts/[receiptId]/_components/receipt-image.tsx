@@ -22,10 +22,11 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 			>
 				<div className="relative">
 					<Image
-						src={receiptUrl}
+						src={`/api/file/${receiptUrl}`}
 						alt="Original Receipt"
             width={100}
             height={100}
+            unoptimized
 						className="rounded-xl max-h-72 w-auto object-contain border border-gray-200 shadow-lg transition-all duration-200 group-hover:shadow-xl group-hover:scale-[1.02]"
 						style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
 					/>
@@ -63,10 +64,11 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 					{/* Image container */}
 					<div className="flex items-center justify-center p-6 pt-16 min-h-[60vh]">
 						<Image
-							src={receiptUrl}
+              src={`/api/file/${receiptUrl}`}
 							alt="Original Receipt - Full Size"
               width={100}
               height={100}
+              unoptimized
 							className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
 							style={{ 
 								maxHeight: "calc(90vh - 120px)",

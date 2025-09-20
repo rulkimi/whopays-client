@@ -70,12 +70,14 @@ export default function UploadReceipt({
 
 	const onSubmit = async (data: UploadReceiptFormValues) => {
 		if (data.file) {
-			await new Promise<void>((resolve) => {
-				convertToBase64(data.file, async (result) => {
-					await uploadReceipt(result, data.friends);
-					resolve();
+			// Convert to base64 on the client side (like add-friend-form)
+			const base64Result = await new Promise<string>((resolve) => {
+				convertToBase64(data.file, (result) => {
+					const base64String = typeof result === 'string' ? result : result.base64;
+					resolve(base64String);
 				});
 			});
+			await uploadReceipt(base64Result, data.friends);
 		}
 		setOpen(false);
 		form.reset();

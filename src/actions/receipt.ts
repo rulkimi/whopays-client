@@ -1,8 +1,7 @@
 "use server"
 
-import { base64ToFile } from "@/lib/utils";
 import { getApiClient } from "./api";
-import { Base64File, Receipt } from "@/types";
+import { Receipt } from "@/types";
 
 export async function fetchReceipts() {
 	try {
@@ -26,16 +25,26 @@ export async function fetchReceiptById(receiptId: string): Promise<Receipt> {
 }
 
 export async function uploadReceipt(
-	file: Base64File,
+	file: string,
 	friend_ids: number[]
 ) {
 	try {
 		const api = await getApiClient();
 		const formData = new FormData();
 
-		const fileData = base64ToFile(file);
+		// Extract base64 data and convert to Blob (like in friend.ts)
+		const [header, data] = file.split(',');
+		const mimeType = header.match(/:(.*?);/)?.[1] || 'application/pdf';
+		const bytes = atob(data);
+		const uint8Array = new Uint8Array(bytes.length);
 
-		formData.append("file", fileData);
+		for (let i = 0; i < bytes.length; i++) {
+			uint8Array[i] = bytes.charCodeAt(i);
+		}
+
+		const blob = new Blob([uint8Array], { type: mimeType });
+
+		formData.append("file", blob, "receipt.pdf");
 
 		friend_ids.forEach((id) => {
 			formData.append("friend_ids", id.toString());
