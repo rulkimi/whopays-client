@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, ZoomIn } from "lucide-react";
+import { X, ZoomIn, Maximize2 } from "lucide-react";
 import Image from "next/image";
 
 type ReceiptImageProps = {
@@ -12,6 +12,21 @@ type ReceiptImageProps = {
 
 export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImageProps) {
 	const [isOpen, setIsOpen] = useState(false);
+	const imgRef = useRef<HTMLImageElement>(null);
+
+	// Fullscreen API handler
+	const handleFullscreen = () => {
+		const img = imgRef.current;
+		if (img) {
+			if (img.requestFullscreen) {
+				img.requestFullscreen();
+			} else if ((img as any).webkitRequestFullscreen) {
+				(img as any).webkitRequestFullscreen();
+			} else if ((img as any).msRequestFullscreen) {
+				(img as any).msRequestFullscreen();
+			}
+		}
+	};
 
 	return (
 		<>
@@ -24,9 +39,9 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 					<Image
 						src={`/api/file/${receiptUrl}`}
 						alt="Original Receipt"
-            width={100}
-            height={100}
-            unoptimized
+						width={100}
+						height={100}
+						unoptimized
 						className="rounded-xl max-h-72 w-auto object-contain border border-gray-200 shadow-lg transition-all duration-200 group-hover:shadow-xl group-hover:scale-[1.02]"
 						style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
 					/>
@@ -52,26 +67,38 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 							<h3 className="text-white font-semibold text-lg">
 								Receipt - {restaurantName}
 							</h3>
-							<button
-								onClick={() => setIsOpen(false)}
-								className="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
-							>
-								<X className="size-5" />
-							</button>
+							<div className="flex items-center gap-2">
+								<button
+									onClick={handleFullscreen}
+									title="Open full screen"
+									className="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
+									type="button"
+								>
+									<Maximize2 className="size-5" />
+								</button>
+								<button
+									onClick={() => setIsOpen(false)}
+									className="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
+									type="button"
+								>
+									<X className="size-5" />
+								</button>
+							</div>
 						</div>
 					</div>
 
 					{/* Image container */}
 					<div className="flex items-center justify-center p-6 pt-16 min-h-[60vh]">
-						<Image
-              src={`/api/file/${receiptUrl}`}
+						{/* eslint-disable-next-line @next/next/no-img-element */}
+						<img
+							ref={imgRef}
+							src={`/api/file/${receiptUrl}`}
 							alt="Original Receipt - Full Size"
-              width={100}
-              height={100}
-              unoptimized
-							className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-							style={{ 
-								maxHeight: "calc(90vh - 120px)",
+							width={800}
+							height={800}
+							className="rounded-xl max-h-[80vh] w-auto object-contain border border-gray-200 shadow-2xl"
+							style={{
+								maxHeight: "80vh",
 								boxShadow: "0 8px 32px rgba(0,0,0,0.3)"
 							}}
 						/>
@@ -80,7 +107,8 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 					{/* Footer hint */}
 					<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
 						<p className="text-white/70 text-sm text-center">
-							Click outside or press ESC to close
+							Click outside or press ESC to close. &nbsp;
+							<span className="inline-block">Use the <Maximize2 className="inline size-4 align-text-bottom" /> button to open full screen.</span>
 						</p>
 					</div>
 				</DialogContent>
