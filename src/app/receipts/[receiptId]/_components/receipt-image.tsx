@@ -18,12 +18,12 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 	const handleFullscreen = () => {
 		const img = imgRef.current;
 		if (img) {
-			if (img.requestFullscreen) {
+			if (typeof img.requestFullscreen === "function") {
 				img.requestFullscreen();
-			} else if ((img as any).webkitRequestFullscreen) {
-				(img as any).webkitRequestFullscreen();
-			} else if ((img as any).msRequestFullscreen) {
-				(img as any).msRequestFullscreen();
+			} else if (typeof (img as unknown as { webkitRequestFullscreen?: () => void }).webkitRequestFullscreen === "function") {
+				(img as unknown as { webkitRequestFullscreen: () => void }).webkitRequestFullscreen();
+			} else if (typeof (img as unknown as { msRequestFullscreen?: () => void }).msRequestFullscreen === "function") {
+				(img as unknown as { msRequestFullscreen: () => void }).msRequestFullscreen();
 			}
 		}
 	};
