@@ -51,15 +51,25 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
 	showCloseButton?: boolean
 }) {
+	// Prevent closing when clicking outside the dialog
+	const handlePointerDownOutside = (event: Event) => {
+		event.preventDefault()
+	}
+
 	return (
 		<DialogPortal>
 			<DialogOverlay />
-			<DialogPrimitive.Content asChild forceMount {...props}>
+			<DialogPrimitive.Content
+				asChild
+				forceMount
+				onPointerDownOutside={handlePointerDownOutside}
+				{...props}
+			>
 				<AnimatePresence>
 					<motion.div
 						data-slot="dialog-content"
 						className={cn(
-							"fixed left-1/2 z-50 w-full max-w-5xl bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl",
+							"fixed left-1/2 z-50 w-full max-w-3xl bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl",
 							"backdrop-blur-[16px] border border-white/40 dark:border-neutral-800/60",
 							"bottom-0 translate-x-[-50%] sm:top-1/2 sm:bottom-auto sm:translate-y-[-50%]",
 							"sm:left-1/2 sm:translate-x-[-50%]",
