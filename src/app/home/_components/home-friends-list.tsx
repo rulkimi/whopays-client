@@ -23,6 +23,8 @@ export default function HomeFriendsList({
 }: {
 	friends: Friend[];
 }) {
+	const [open, setOpen] = React.useState(false);
+
 	return (
 		<Section>
 			<SectionHeader className="flex justify-between gap-1">
@@ -48,8 +50,8 @@ export default function HomeFriendsList({
 			<SectionContent>
 				<Card>
 					<CardContent>
-						<div className="flex items-center gap-2">
-							<Dialog>
+						<div className="flex items-start gap-2">
+							<Dialog open={open} onOpenChange={setOpen}>
 								<DialogTrigger asChild>
 									<button
 										type="button"
@@ -70,13 +72,13 @@ export default function HomeFriendsList({
 									</button>
 								</DialogTrigger>
 								<DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Friend</DialogTitle>
-                  </DialogHeader>
-                  <AddFriendForm />
+									<DialogHeader>
+										<DialogTitle>Add Friend</DialogTitle>
+									</DialogHeader>
+									<AddFriendForm onSuccess={() => setOpen(false)} />
 								</DialogContent>
 							</Dialog>
-							<AvatarGroup>
+							<AvatarGroup className="flex-wrap">
 								{friends.map((friend) => (
 									<FriendAvatar key={friend.id} friend={friend} />
 								))}
