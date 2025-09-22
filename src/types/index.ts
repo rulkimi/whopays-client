@@ -47,3 +47,27 @@ export interface Base64File {
   lastModified: number;
   base64: string;
 }
+
+export interface ReceiptSplitsSummary {
+  subtotal: number;
+  tax: number;
+  service_charge: number;
+  total: number;
+}
+
+export interface ReceiptSplitsTotalsPerFriend {
+  friend_id: number;
+  friend_name?: string;
+  subtotal: number;
+  tax: number;
+  service_charge: number;
+  total: number;
+}
+
+export interface ReceiptSplitsResponse {
+  receipt_id: number;
+  currency: string;
+  totals: ReceiptSplitsTotalsPerFriend[];
+  summary: ReceiptSplitsSummary;
+  note: string;
+}
