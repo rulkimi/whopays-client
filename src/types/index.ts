@@ -60,6 +60,7 @@ export interface ReceiptSplitsFriendItem {
 export interface ReceiptSplitsTotalsPerFriend {
   id: number; // friend id
   name: string; // friend name
+  photo_url?: string;
   subtotal: number;
   tax: number;
   service_charge: number;
