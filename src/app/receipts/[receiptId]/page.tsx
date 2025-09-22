@@ -34,12 +34,12 @@ export default async function ReceiptPage({
 			<PageContent>
 				<div
 					className={cn(
-						"mx-auto max-w-3xl w-full bg-white border border-dashed border-gray-300 rounded-[20px] shadow-xl relative overflow-hidden",
+						"mx-auto max-w-3xl w-full bg-white border border-dashed border-gray-300 rounded-[20px] shadow-sm relative overflow-hidden",
 						"before:content-[''] before:absolute before:inset-0 before:bg-[repeating-linear-gradient(135deg,#fafafa_0px,#fafafa_6px,#f8f8f8_6px,#f8f8f8_12px)] before:opacity-60 before:pointer-events-none"
 					)}
 					style={{
 						fontFamily: "'SF Mono', 'Monaco', 'Consolas', 'monospace', 'SF Pro Display', sans-serif",
-						boxShadow: "0 8px 40px 0 rgba(0,0,0,0.12), 0 2px 8px 0 rgba(0,0,0,0.08)",
+						// boxShadow: "0 8px 40px 0 rgba(0,0,0,0.12), 0 2px 8px 0 rgba(0,0,0,0.08)",
 						padding: "0 0 28px 0",
 					}}
 				>

@@ -16,7 +16,7 @@ export function PageLayout({
 	return (
 		<main
 			className={cn(
-				"min-h-screen flex flex-col bg-gradient-to-b from-background to-muted",
+				"min-h-full flex flex-col bg-gradient-to-b from-background to-muted",
 				className
 			)}
 		>
@@ -59,7 +59,7 @@ export function PageHeader({
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-30 px-0 py-0 border-b bg-white/80 backdrop-blur-md flex items-center h-[56px] shadow-none border-border",
+				"fixed top-0 right-0 left-0 z-30 px-0 py-0 border-b bg-white/80 backdrop-blur-md flex items-center h-[56px] shadow-none border-border",
 				"backdrop-blur-[12px]",
 				"shadow-[0_1px_0_0_var(--border,#e5e5ea)]",
 				className
@@ -145,7 +145,7 @@ export function PageContent({
           className={cn(
             "w-full",
             "overflow-auto",
-            "px-4 pt-5 pb-0",
+            "px-4 pt-18 pb-4",
             "mx-auto",
             "max-w-4xl mx-auto",
             className
