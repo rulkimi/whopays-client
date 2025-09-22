@@ -48,16 +48,43 @@ export interface Base64File {
   base64: string;
 }
 
-export interface ReceiptSplitsSummary {
+export interface ReceiptSplitsFriendItem {
+  item_id: number;
+  item_name: string;
+  quantity: number;
+  unit_total: number;
+  line_total: number;
+  share: number;
+}
+
+export interface ReceiptSplitsTotalsPerFriend {
+  id: number; // friend id
+  name: string; // friend name
   subtotal: number;
   tax: number;
   service_charge: number;
   total: number;
+  items: ReceiptSplitsFriendItem[];
 }
 
-export interface ReceiptSplitsTotalsPerFriend {
-  friend_id: number;
-  friend_name?: string;
+export interface ReceiptSplitsItemFriendShare {
+  id: number;
+  name: string;
+  share: number;
+}
+
+export interface ReceiptSplitsItem {
+  item_id: number;
+  item_name: string;
+  quantity: number;
+  unit_price: number;
+  variations: {}[]; // structure not used here; keeping as empty objects to match payload
+  unit_total: number;
+  line_total: number;
+  friends: ReceiptSplitsItemFriendShare[];
+}
+
+export interface ReceiptSplitsSummary {
   subtotal: number;
   tax: number;
   service_charge: number;
@@ -68,6 +95,7 @@ export interface ReceiptSplitsResponse {
   receipt_id: number;
   currency: string;
   totals: ReceiptSplitsTotalsPerFriend[];
+  items: ReceiptSplitsItem[];
   summary: ReceiptSplitsSummary;
   note: string;
 }

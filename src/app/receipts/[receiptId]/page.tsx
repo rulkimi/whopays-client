@@ -12,7 +12,8 @@ import { AvatarGroup } from "@/components/ui/avatar";
 import ItemInfo from "./_components/item-info";
 import ReceiptImage from "./_components/receipt-image";
 import { Item } from "@/types";
-import { fetchReceiptSplits } from "@/actions/receipt";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function ReceiptPage({
   params,
@@ -21,7 +22,6 @@ export default async function ReceiptPage({
 }) {
   const { receiptId } = await params;
   const receipt = await fetchReceiptById(receiptId);
-  const splits = await fetchReceiptSplits(receiptId);
 
   const persons =
     receipt.friends.length === 0
@@ -29,16 +29,6 @@ export default async function ReceiptPage({
       : `${receipt.friends.length} ${
           receipt.friends.length === 1 ? "person" : "persons"
         }`;
-
-  const friendMap = new Map<
-    number,
-    { id: number; name: string; photo_url: string }
-  >(
-    receipt.friends.map((f) => [
-      f.id,
-      { id: f.id, name: f.name, photo_url: f.photo_url },
-    ])
-  );
 
   return (
     <PageLayout>
@@ -170,91 +160,11 @@ export default async function ReceiptPage({
               </div>
             </div>
 
-            {/* Splits Section */}
-            <div className="border-t-2 border-dashed border-gray-400 pt-4">
-              <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">
-                SPLITS
-              </div>
-              <div className="mt-3 text-xs text-gray-500 text-center font-mono">
-                {splits.note}
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm font-mono">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 uppercase tracking-wide">
-                    Subtotal
-                  </span>
-                  <span className="tabular-nums font-semibold">
-                    {formatCurrency(splits.summary.subtotal, splits.currency)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 uppercase tracking-wide">
-                    Tax
-                  </span>
-                  <span className="tabular-nums font-semibold">
-                    {formatCurrency(splits.summary.tax, splits.currency)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 uppercase tracking-wide">
-                    Service Charge
-                  </span>
-                  <span className="tabular-nums font-semibold">
-                    {formatCurrency(
-                      splits.summary.service_charge,
-                      splits.currency
-                    )}
-                  </span>
-                </div>
-                <div className="flex justify-between font-bold">
-                  <span className="tracking-widest uppercase text-gray-900">
-                    Total
-                  </span>
-                  <span className="tabular-nums text-primary">
-                    {formatCurrency(splits.summary.total, splits.currency)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-2">
-                {splits.totals.map((t) => {
-                  const friend = friendMap.get(t.friend_id);
-                  return (
-                    <div
-                      key={t.friend_id}
-                      className="flex items-center justify-between border-b border-dotted border-gray-300 pb-2 last:border-b-0"
-                    >
-                      <div className="flex items-center gap-2">
-                        {friend && (
-                          <FriendAvatar
-                            friend={{
-                              id: friend.id,
-                              name: friend.name,
-                              photo_url: friend.photo_url,
-                              user_id: 0,
-                            }}
-                          />
-                        )}
-                        <span className="font-semibold text-gray-800">
-                          {friend?.name ??
-                            t.friend_name ??
-                            `Friend #${t.friend_id}`}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-base text-gray-900 font-mono tabular-nums">
-                          {formatCurrency(t.total, splits.currency)}
-                        </div>
-                        <div className="text-[11px] text-gray-500 font-mono tabular-nums">
-                          {formatCurrency(t.subtotal, splits.currency)} +{" "}
-                          {formatCurrency(t.tax, splits.currency)} +{" "}
-                          {formatCurrency(t.service_charge, splits.currency)}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Split the bill button */}
+            <div className="px-8 mt-4">
+              <Link href={`/receipts/${receiptId}/splits`}>
+                <Button className="w-full">Split the bill</Button>
+              </Link>
             </div>
 
             {/* Receipt Image */}
