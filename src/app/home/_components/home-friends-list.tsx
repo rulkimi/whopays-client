@@ -71,7 +71,7 @@ export default function HomeFriendsList({
 										<CirclePlus className="size-12" />
 									</button>
 								</DialogTrigger>
-								<DialogContent>
+							<DialogContent id="add-friend-dialog-content">
 									<DialogHeader>
 										<DialogTitle>Add Friend</DialogTitle>
 									</DialogHeader>
