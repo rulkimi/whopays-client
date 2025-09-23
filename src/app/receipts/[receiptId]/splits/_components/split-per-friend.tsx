@@ -17,7 +17,7 @@ export default function SplitPerFriend({
         PER-FRIEND TOTALS
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {splits.totals.map((friendTotal) => (
+        {splits.totals?.map((friendTotal) => (
           <div
             key={friendTotal.id}
             className="border-b border-dotted border-gray-300 pb-3 last:border-b-0"
