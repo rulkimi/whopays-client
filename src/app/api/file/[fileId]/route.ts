@@ -33,22 +33,36 @@ export async function GET(
 		return NextResponse.json({ error: "Failed to fetch file" }, { status: 500 });
 	}
 
+	// If FastAPI returns the actual file (e.g., image/jpeg), proxy it directly
+	const contentType = res.headers.get("content-type") || "";
+	if (!contentType.includes("application/json") && !contentType.includes("text/plain")) {
+		console.log("DEBUG: FastAPI returned binary content, proxying directly. Content-Type:", contentType);
+		return new NextResponse(res.body, {
+			status: 200,
+			headers: {
+				"Content-Type": contentType || "application/octet-stream",
+				"Cache-Control": "public, max-age=3600",
+			},
+		});
+	}
+
+	// Otherwise, expect a JSON or text response containing a presigned URL
 	let url: string | undefined;
 	try {
-		const json = await res.json();
-		console.log("DEBUG: FastAPI response JSON:", json);
+		const isText = contentType.includes("text/plain");
+		const payload = isText ? await res.text() : await res.json();
+		console.log("DEBUG: FastAPI response payload:", payload);
 
-		// The FastAPI response may be a string (the URL) or an object with a url property
-		if (typeof json === "string") {
-			url = json;
-		} else if (json && typeof json.url === "string") {
-			url = json.url;
+		if (typeof payload === "string") {
+			url = payload;
+		} else if (payload && typeof (payload as { url?: string }).url === "string") {
+			url = (payload as { url: string }).url;
 		} else {
-			console.error("ERROR: Unexpected FastAPI response format", json);
+			console.error("ERROR: Unexpected FastAPI response format", payload);
 			return NextResponse.json({ error: "Invalid presigned URL response" }, { status: 500 });
 		}
 	} catch (err) {
-		console.error("ERROR: Failed to parse FastAPI response as JSON", err);
+		console.error("ERROR: Failed to parse FastAPI response for presigned URL", err);
 		return NextResponse.json({ error: "Failed to parse presigned URL" }, { status: 500 });
 	}
 
