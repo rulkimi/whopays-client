@@ -65,7 +65,7 @@ export default function SplitContent({
           }}
         />
       </div>
-      <div ref={hookRef} data-detailed={mode === "detailed"}>
+      <div ref={hookRef} data-detailed={mode === "detailed"} className="bg-white p-4 rounded-lg">
         <SplitSummary splits={splits} />
         <SplitPerFriend splits={splits} showItems={mode === "detailed"} />
         {mode === "detailed" && <SplitItems splits={splits} />}
