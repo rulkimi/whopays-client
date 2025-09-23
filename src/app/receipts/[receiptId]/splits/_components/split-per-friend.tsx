@@ -11,13 +11,26 @@ export default function SplitPerFriend({
   splits: ReceiptSplitsResponse;
   showItems?: boolean;
 }) {
+  if (!splits?.totals || splits.totals.length === 0) {
+    return (
+      <div className="border-t-2 border-dashed border-gray-400 pt-6">
+        <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">
+          PER-FRIEND TOTALS
+        </div>
+        <div className="mt-4 text-center text-gray-500">
+          No friend totals available
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-t-2 border-dashed border-gray-400 pt-6">
       <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">
         PER-FRIEND TOTALS
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {splits.totals?.map((friendTotal) => (
+        {splits.totals.map((friendTotal) => (
           <div
             key={friendTotal.id}
             className="border-b border-dotted border-gray-300 pb-3 last:border-b-0"

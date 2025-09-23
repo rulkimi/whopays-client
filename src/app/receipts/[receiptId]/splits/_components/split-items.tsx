@@ -8,6 +8,19 @@ export default function SplitItems({
 }: {
   splits: ReceiptSplitsResponse;
 }) {
+  if (!splits?.items || splits.items.length === 0) {
+    return (
+      <div className="border-t-2 border-dashed border-gray-400 pt-6">
+        <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">
+          ITEMS
+        </div>
+        <div className="mt-4 text-center text-gray-500">
+          No items found
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-t-2 border-dashed border-gray-400 pt-6">
       <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">

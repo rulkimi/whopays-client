@@ -8,6 +8,20 @@ export default function SplitSummary({
 }: {
   splits: ReceiptSplitsResponse;
 }) {
+  // Handle case where splits.summary might be undefined
+  if (!splits?.summary) {
+    return (
+      <div className="border-t-2 border-dashed border-gray-400 pt-4">
+        <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">
+          SUMMARY
+        </div>
+        <div className="mt-4 text-center text-gray-500">
+          Unable to load summary data
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-t-2 border-dashed border-gray-400 pt-4">
       <div className="font-semibold text-lg text-gray-800 tracking-wide text-center border-b border-dashed border-gray-300 pb-2">

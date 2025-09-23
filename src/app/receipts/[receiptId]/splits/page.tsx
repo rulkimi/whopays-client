@@ -17,8 +17,29 @@ export default async function ReceiptSplitsPage({
   params: Promise<{ receiptId: string }>;
 }) {
   const { receiptId } = await params;
-  const receipt = await fetchReceiptById(receiptId);
-  const splits = await fetchReceiptSplits(receiptId);
+  
+  let receipt;
+  let splits;
+  
+  try {
+    receipt = await fetchReceiptById(receiptId);
+    splits = await fetchReceiptSplits(receiptId);
+  } catch (error) {
+    console.error("Error fetching receipt or splits data:", error);
+    return (
+      <PageLayout>
+        <PageHeader backHref={`/receipts/${receiptId}`}>
+          <PageTitle>Split Bill</PageTitle>
+        </PageHeader>
+        <PageContent>
+          <div className="text-center py-8">
+            <p className="text-gray-500">Unable to load receipt splits data.</p>
+            <p className="text-sm text-gray-400 mt-2">Please try again later.</p>
+          </div>
+        </PageContent>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout>
