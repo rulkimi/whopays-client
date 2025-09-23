@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Upload } from "lucide-react";
 import {
 	Dialog,
@@ -27,6 +27,7 @@ import {
 	FormControl,
 	FormMessage,
 } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 
 const uploadReceiptSchema = z.object({
 	friends: z.array(z.number()).min(1, "Select at least one friend"),
@@ -42,7 +43,63 @@ export default function UploadReceipt({
 }: {
 	friends: Friend[];
 }) {
-	const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const router = useRouter();
+    const sseAbortRef = useRef<AbortController | null>(null);
+
+    // Open SSE stream to Node proxy which authenticates to backend using Authorization header
+    async function connectToJobSse(jobId: string, onMessage: (data: any) => void): Promise<AbortController> {
+        const controller = new AbortController();
+        const res = await fetch(`/api/ws/${jobId}`, {
+            method: "GET",
+            credentials: "include",
+            signal: controller.signal,
+            headers: { Accept: "text/event-stream" },
+        });
+        if (!res.ok || !res.body) {
+            throw new Error(`Failed to open SSE: ${res.status}`);
+        }
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        (async () => {
+            try {
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let idx: number;
+                    while ((idx = buffer.indexOf("\n\n")) !== -1) {
+                        const chunk = buffer.slice(0, idx);
+                        buffer = buffer.slice(idx + 2);
+                        const line = chunk.split("\n").find((l) => l.startsWith("data: "));
+                        if (line) {
+                            const json = line.slice(6);
+                            try {
+                                const parsed = JSON.parse(json);
+                                // Print SSE payload from server proxy
+                                // eslint-disable-next-line no-console
+                                console.log("[SSE jobs]", parsed);
+                                onMessage(parsed);
+                            } catch {}
+                        }
+                    }
+                }
+            } catch {
+                // stream aborted or errored
+            }
+        })();
+        return controller;
+    }
+
+    useEffect(() => {
+        return () => {
+            if (sseAbortRef.current) {
+                try { sseAbortRef.current.abort(); } catch {}
+                sseAbortRef.current = null;
+            }
+        };
+    }, []);
 
 	const form = useForm<UploadReceiptFormValues>({
 		resolver: zodResolver(uploadReceiptSchema),
@@ -77,7 +134,22 @@ export default function UploadReceipt({
 					resolve(base64String);
 				});
 			});
-			await uploadReceipt(base64Result, data.friends);
+            const job = await uploadReceipt(base64Result, data.friends);
+            if (job?.job_id) {
+                try {
+                    const ctrl = await connectToJobSse(job.job_id as string, (payload) => {
+                        const status = (payload?.data?.status || payload?.status) as string | undefined;
+                        if (status === "SUCCEEDED") {
+                            try { ctrl.abort(); } catch {}
+                            sseAbortRef.current = null;
+                            router.refresh();
+                        }
+                    });
+                    sseAbortRef.current = ctrl;
+                } catch {
+                    // ignore stream setup errors
+                }
+            }
 		}
 		setOpen(false);
 		form.reset();

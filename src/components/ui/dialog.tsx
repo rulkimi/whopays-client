@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
-import { motion, AnimatePresence, Variants } from "motion/react"
+import { motion, Variants } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -25,19 +25,17 @@ function DialogOverlay({
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
 	return (
 		<DialogPrimitive.Overlay asChild forceMount {...props}>
-			<AnimatePresence>
-				<motion.div
-					data-slot="dialog-overlay"
-					className={cn(
-						"fixed inset-0 z-50 bg-black/20 transition-all",
-						className
-					)}
-					variants={overlayVariants}
-					initial="closed"
-					animate="open"
-					exit="closed"
-				/>
-			</AnimatePresence>
+			<motion.div
+				data-slot="dialog-overlay"
+				className={cn(
+					"fixed inset-0 z-50 bg-black/20 transition-all",
+					className
+				)}
+				variants={overlayVariants}
+				initial="closed"
+				animate="open"
+				exit="closed"
+			/>
 		</DialogPrimitive.Overlay>
 	)
 }
@@ -65,42 +63,40 @@ function DialogContent({
 				onPointerDownOutside={handlePointerDownOutside}
 				{...props}
 			>
-				<AnimatePresence>
-					<motion.div
-						data-slot="dialog-content"
-						className={cn(
-							"fixed left-1/2 z-50 w-full max-w-3xl bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl",
-							"backdrop-blur-[16px] border border-white/40 dark:border-neutral-800/60",
-							"bottom-0 translate-x-[-50%] sm:top-1/2 sm:bottom-auto sm:translate-y-[-50%]",
-							"sm:left-1/2 sm:translate-x-[-50%]",
-							"p-0 overflow-hidden",
-							className
-						)}
-						style={{ maxHeight: "calc(100dvh - 2rem)" }}
-						variants={contentVariants}
-						initial="closed"
-						animate="open"
-						exit="closed"
-					>
-						{/* Drag indicator */}
-						<div className="w-full flex justify-center pt-3 pb-1">
-							<div className="h-1.5 w-12 rounded-full bg-neutral-300/80 dark:bg-neutral-700/70" />
-						</div>
+				<motion.div
+					data-slot="dialog-content"
+					className={cn(
+						"fixed left-1/2 z-50 w-full max-w-3xl bg-white/80 dark:bg-neutral-900/80 rounded-[22px] shadow-2xl",
+						"backdrop-blur-[16px] border border-white/40 dark:border-neutral-800/60",
+						"bottom-0 translate-x-[-50%] sm:top-1/2 sm:bottom-auto sm:translate-y-[-50%]",
+						"sm:left-1/2 sm:translate-x-[-50%]",
+						"p-0 overflow-hidden",
+						className
+					)}
+					style={{ maxHeight: "calc(100dvh - 2rem)" }}
+					variants={contentVariants}
+					initial="closed"
+					animate="open"
+					exit="closed"
+				>
+					{/* Drag indicator */}
+					<div className="w-full flex justify-center pt-3 pb-1">
+						<div className="h-1.5 w-12 rounded-full bg-neutral-300/80 dark:bg-neutral-700/70" />
+					</div>
 
-						<div className="relative px-6 pt-2 pb-6 sm:pt-6 sm:pb-7">
-							{showCloseButton && (
-								<DialogPrimitive.Close
-									data-slot="dialog-close"
-									className="absolute right-3 top-3 rounded-full p-2 bg-white/80 dark:bg-neutral-800/80 shadow hover:bg-white/90 dark:hover:bg-neutral-800/90 focus:outline-none focus:ring-2 focus:ring-primary transition"
-								>
-									<XIcon className="w-5 h-5 text-neutral-500" />
-									<span className="sr-only">Close</span>
-								</DialogPrimitive.Close>
-							)}
-							{children}
-						</div>
-					</motion.div>
-				</AnimatePresence>
+					<div className="relative px-6 pt-2 pb-6 sm:pt-6 sm:pb-7">
+						{showCloseButton && (
+							<DialogPrimitive.Close
+								data-slot="dialog-close"
+								className="absolute right-3 top-3 rounded-full p-2 bg-white/80 dark:bg-neutral-800/80 shadow hover:bg-white/90 dark:hover:bg-neutral-800/90 focus:outline-none focus:ring-2 focus:ring-primary transition"
+							>
+								<XIcon className="w-5 h-5 text-neutral-500" />
+								<span className="sr-only">Close</span>
+							</DialogPrimitive.Close>
+						)}
+						{children}
+					</div>
+				</motion.div>
 			</DialogPrimitive.Content>
 		</DialogPortal>
 	)
