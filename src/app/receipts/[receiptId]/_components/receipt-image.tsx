@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { X, ZoomIn, Maximize2 } from "lucide-react";
 import Image from "next/image";
 
@@ -61,6 +61,7 @@ export default function ReceiptImage({ receiptUrl, restaurantName }: ReceiptImag
 			{/* Full-size dialog */}
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
 				<DialogContent aria-label={`Receipt - ${restaurantName}`} className="max-w-4xl max-h-[90vh] p-0 bg-black/95 border-0">
+					<DialogTitle className="sr-only">Receipt - {restaurantName}</DialogTitle>
 					{/* Header */}
 					<div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-4">
 						<div className="flex items-center justify-between">
