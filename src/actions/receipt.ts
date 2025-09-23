@@ -58,6 +58,7 @@ export async function uploadReceipt(file: string, friend_ids: number[]) {
     });
 
     const response = await api.post("/receipts", formData);
+    console.log("DEBUG: Upload receipt response:", response);
     return response.data;
   } catch (error) {
     console.error("Error uploading receipt:", error);
