@@ -5,13 +5,9 @@ import { Receipt } from "@/types";
 import { ReceiptSplitsResponse } from "@/types";
 
 export async function fetchReceipts() {
-  try {
-    const api = await getApiClient();
-    const response = await api.get("/receipts");
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const api = await getApiClient();
+  const response = await api.get("/receipts");
+  return response.data;
 }
 
 export async function fetchReceiptById(receiptId: string): Promise<Receipt> {

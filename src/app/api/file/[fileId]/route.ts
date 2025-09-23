@@ -64,7 +64,7 @@ export async function GET(
 		try {
 			url = JSON.parse(url);
 		} catch (e) {
-			console.error("ERROR: Failed to parse stringified URL", url);
+			console.error("ERROR: Failed to parse stringified URL", url, e);
 			return NextResponse.json({ error: "Invalid presigned URL format" }, { status: 500 });
 		}
 	}
@@ -75,7 +75,7 @@ export async function GET(
 			try {
 				url = (url as { toString: () => string }).toString();
 			} catch (e) {
-				console.error("ERROR: Could not convert presigned URL to string", url);
+				console.error("ERROR: Could not convert presigned URL to string", url, e);
 				return NextResponse.json({ error: "Invalid presigned URL type" }, { status: 500 });
 			}
 		} else {
