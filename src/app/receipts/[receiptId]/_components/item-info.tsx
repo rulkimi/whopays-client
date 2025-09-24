@@ -12,17 +12,30 @@ import { addFriendsToItem } from "@/actions/item"
 type ItemInfoProps = {
 	item: Item
 	currency: string
-	allFriends: Friend[] // Pass all possible friends to select from
-	onFriendsUpdated?: (itemId: number, newFriends: Friend[]) => void // Callback to update parent state
+	allFriends: Friend[]
+	onFriendsUpdated?: (itemId: number, newFriends: Friend[]) => void
+}
+
+// Helper: Calculate total price for the item
+function getItemTotalPrice(item: Item) {
+	const hasVariations = item.variation && item.variation.length > 0
+	if (hasVariations) {
+		// If any variation has a price > 0, sum all variation prices
+		const anyVariationHasPrice = item.variation.some(v => v.price > 0)
+		if (anyVariationHasPrice) {
+			return item.variation.reduce((sum, v) => sum + v.price, 0) * item.quantity
+		}
+		// All variations are zero, fallback to unit_price
+		return item.unit_price * item.quantity
+	}
+	return item.unit_price * item.quantity
 }
 
 export default function ItemInfo({ item, currency, allFriends, onFriendsUpdated }: ItemInfoProps) {
 	const hasVariations = item.variation && item.variation.length > 0
+	const anyVariationHasPrice = hasVariations && item.variation.some(v => v.price > 0)
 
-	// Calculate total price
-	const totalPrice = hasVariations
-		? item.variation.reduce((sum, v) => sum + v.price, 0) * item.quantity
-		: item.unit_price * item.quantity
+	const totalPrice = getItemTotalPrice(item)
 
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>(item.friends?.map(f => f.id) || [])
@@ -37,15 +50,11 @@ export default function ItemInfo({ item, currency, allFriends, onFriendsUpdated 
 	}
 
 	const handleSaveFriends = async () => {
-		console.log("Saving friends for item:", item.item_id)
-		console.log("Selected friend IDs:", selectedFriendIds)
 		setSubmitting(true)
 		const res = await addFriendsToItem(item.item_id, selectedFriendIds)
-		console.log("addFriendsToItem response:", res)
 		setSubmitting(false)
 		if (res.success && onFriendsUpdated) {
 			const newFriends = allFriends.filter(f => selectedFriendIds.includes(f.id))
-			console.log("New friends after update:", newFriends)
 			onFriendsUpdated(item.item_id, newFriends)
 		}
 		setDialogOpen(false)
@@ -81,8 +90,21 @@ export default function ItemInfo({ item, currency, allFriends, onFriendsUpdated 
 						<div key={idx} className="flex justify-between font-mono">
 							<span className="text-gray-500">• {v.variation_name}</span>
 							<span className="tabular-nums">
-								{formatCurrency(v.price, currency)}
-								{item.quantity > 1 && ` × ${item.quantity}`}
+								{/* 
+									Logic:
+									- If any variation has price > 0, show v.price (should only show price for those with price > 0, others show 0)
+									- If all variations are zero, show 0 for all (but main price comes from unit_price)
+								*/}
+								{anyVariationHasPrice
+									? <>
+										{formatCurrency(v.price, currency)}
+										{item.quantity > 1 && ` × ${item.quantity}`}
+									</>
+									: <>
+										{formatCurrency(0, currency)}
+										{item.quantity > 1 && ` × ${item.quantity}`}
+									</>
+								}
 							</span>
 						</div>
 					))}
