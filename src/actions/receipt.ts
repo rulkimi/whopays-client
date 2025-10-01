@@ -65,3 +65,20 @@ export async function uploadReceipt(file: string, friend_ids: number[]) {
     throw error;
   }
 }
+
+export async function deleteReceipt(receiptId: number) {
+	try {
+		const api = await getApiClient();
+		const response = await api.delete(`/receipts/${receiptId}`);
+		return response.data;
+	} catch (error: any) {
+		if (error.response && error.response.status === 404) {
+			throw new Error(error.response.data?.detail || "Receipt not found.");
+		} else if (error.response && error.response.status === 400) {
+			throw new Error(error.response.data?.detail || "Failed to delete receipt.");
+		} else {
+			console.error("Error deleting receipt:", error);
+			throw error;
+		}
+	}
+}

@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { CardFooter } from "@/components/ui/card";
 import { logIn } from "@/actions/auth";
+import { useState } from "react";
 
 const loginFormSchema = z.object({
 	email: z.email({ message: "Enter a valid email address." }),
@@ -21,6 +22,8 @@ type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
 	const router = useRouter();
+	const [loading, setLoading] = useState(false);
+
 	const form = useForm<LoginFormSchema>({
 		resolver: zodResolver(loginFormSchema),
 		defaultValues: {
@@ -30,11 +33,19 @@ export default function LoginForm() {
 	});
 
 	const onSubmit = async (values: LoginFormSchema) => {
-		const response = await logIn(values);
-		console.log(response);
-		if (response && response.access_token) {
-			document.cookie = `access_token=${response.access_token}; path=/;`;
-			router.push("/home");
+		setLoading(true);
+		try {
+			const response = await logIn(values);
+			console.log(response);
+			if (response && response.access_token) {
+				document.cookie = `access_token=${response.access_token}; path=/;`;
+				router.push("/home");
+			}
+		} catch (error) {
+			console.error(error);
+			// Optionally show error to user
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -60,6 +71,7 @@ export default function LoginForm() {
 										placeholder="johndoe@example.com"
 										type="email"
 										{...field}
+										disabled={loading}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -77,6 +89,7 @@ export default function LoginForm() {
 										placeholder="********"
 										type="password"
 										{...field}
+										disabled={loading}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -88,9 +101,19 @@ export default function LoginForm() {
 				<Button
 					className="w-full flex items-center justify-center gap-2 group"
 					type="submit"
+					disabled={loading}
 				>
-					Log in
-					<ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
+					{loading ? (
+						<>
+							<LoaderCircle className="animate-spin" />
+							Logging in...
+						</>
+					) : (
+						<>
+							Log in
+							<ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
+						</>
+					)}
 				</Button>
 
 				<CardFooter className="flex justify-center text-sm">
