@@ -34,8 +34,8 @@ export default function DeleteReceiptButton({ receiptId, onDeleted }: DeleteRece
 				setOpen(false)
 				if (onDeleted) onDeleted()
 				else window.location.reload()
-			} catch (err: any) {
-				setError(err?.message || "Failed to delete receipt.")
+			} catch (err) {
+				setError((err && typeof err === "object" && "message" in err) ? (err as { message?: string }).message || "Failed to delete receipt." : "Failed to delete receipt.")
 			}
 		})
 	}

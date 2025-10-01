@@ -71,14 +71,30 @@ export async function deleteReceipt(receiptId: number) {
 		const api = await getApiClient();
 		const response = await api.delete(`/receipts/${receiptId}`);
 		return response.data;
-	} catch (error: any) {
-		if (error.response && error.response.status === 404) {
-			throw new Error(error.response.data?.detail || "Receipt not found.");
-		} else if (error.response && error.response.status === 400) {
-			throw new Error(error.response.data?.detail || "Failed to delete receipt.");
-		} else {
-			console.error("Error deleting receipt:", error);
-			throw error;
+	} catch (error: unknown) {
+		if (
+			typeof error === "object" &&
+			error !== null &&
+			"response" in error &&
+			typeof (error as { response?: unknown }).response === "object" &&
+			(error as { response?: { status?: unknown } }).response !== null
+		) {
+			const response = (error as { response: { status?: number; data?: { detail?: string } } }).response;
+			if (response.status === 404) {
+				throw new Error(
+					response.data && response.data.detail
+						? response.data.detail
+						: "Receipt not found."
+				);
+			} else if (response.status === 400) {
+				throw new Error(
+					response.data && response.data.detail
+						? response.data.detail
+						: "Failed to delete receipt."
+				);
+			}
 		}
+		console.error("Error deleting receipt:", error);
+		throw error;
 	}
 }

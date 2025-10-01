@@ -43,7 +43,7 @@ export default function SignupForm() {
 	const onSubmit = async (values: SignupFormSchema) => {
 		setLoading(true);
 		try {
-			const response = await signUp(values);
+			await signUp(values);
 			// You may want to check for response.success or similar
 			toast.success("Successfully registered! Please log in.");
 			router.push("/login");

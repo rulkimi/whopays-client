@@ -5,7 +5,6 @@ import { useToPng } from "@hugocxl/react-to-image";
 import { Receipt, ReceiptSplitsResponse } from "@/types";
 import SplitSummary from "./split-summary";
 import SplitPerFriend from "./split-per-friend";
-import SplitItems from "./split-items";
 import ShareButton from "./share-button";
 import SplitViewToggle from "./split-view-toggle";
 

@@ -1,5 +1,4 @@
 // Import all avatar images
-import angry_male_avatar from "@/assets/friend-avatar/angry_male_avatar.png";
 import happy_female_avatar from "@/assets/friend-avatar/happy_female_avatar.png";
 import masked_male_avatar from "@/assets/friend-avatar/masked_male_avatar.png";
 import nerd_female_avatar from "@/assets/friend-avatar/nerd_female_avatar.png";
