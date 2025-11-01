@@ -95,6 +95,8 @@ export default function UploadReceipt({
 		console.log("Dialog closed and form reset.");
 	};
 
+  const onError = (values: unknown) => console.log(values);
+
 	const handleDialogClose = () => {
 		setOpen(false);
 		form.reset();
@@ -123,7 +125,7 @@ export default function UploadReceipt({
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={form.handleSubmit(onSubmit, onError)}
 							className="space-y-4"
 						>
 							<FormField
