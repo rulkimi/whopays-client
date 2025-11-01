@@ -1,19 +1,18 @@
 import AuthCard from "../_components/auth-card";
 import LoginForm from "../_components/login-form";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
-	const cookieStore = await cookies();
-	const accessToken = cookieStore.get("access_token")?.value;
+  const session = await getSession();
 
-	if (accessToken) {
-		redirect("/home");
-	}
+  if (session) {
+    redirect("/home");
+  }
 
-	return (
-		<AuthCard>
-			<LoginForm />
-		</AuthCard>
-	);
+  return (
+    <AuthCard>
+      <LoginForm />
+    </AuthCard>
+  );
 }

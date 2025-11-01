@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getAccessToken } from "@/lib/session";
 
 export async function GET(
   req: NextRequest,
@@ -7,8 +7,7 @@ export async function GET(
 ) {
   const { receiptId } = await params;
 
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const accessToken = await getAccessToken();
 
   const apiUrl = `${process.env.API_URL}/receipts/${receiptId}/splits`;
 
