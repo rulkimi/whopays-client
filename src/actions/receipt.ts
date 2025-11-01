@@ -36,13 +36,20 @@ export async function fetchReceiptSplits(
 
 export async function uploadReceipt(file: string, friend_ids: number[]) {
   try {
+    console.log("Uploading receipt. File (base64) length:", file.length);
+    console.log("Friend IDs:", friend_ids);
+
     const api = await getApiClient();
     const formData = new FormData();
 
     // Extract base64 data and convert to Blob (like in friend.ts)
     const [header, data] = file.split(",");
     const mimeType = header.match(/:(.*?);/)?.[1] || "application/pdf";
+    console.log("Detected MIME type:", mimeType);
+
     const bytes = atob(data);
+    console.log("Decoded base64 to bytes. Bytes length:", bytes.length);
+
     const uint8Array = new Uint8Array(bytes.length);
 
     for (let i = 0; i < bytes.length; i++) {
@@ -50,13 +57,16 @@ export async function uploadReceipt(file: string, friend_ids: number[]) {
     }
 
     const blob = new Blob([uint8Array], { type: mimeType });
+    console.log("Created Blob. Blob size:", blob.size);
 
     formData.append("file", blob, "receipt.pdf");
 
     friend_ids.forEach((id) => {
+      console.log("Appending friend_id to formData:", id);
       formData.append("friend_ids", id.toString());
     });
 
+    console.log("Posting formData to /receipts");
     const response = await api.post("/receipts", formData);
     console.log("DEBUG: Upload receipt response:", response);
     return response.data;

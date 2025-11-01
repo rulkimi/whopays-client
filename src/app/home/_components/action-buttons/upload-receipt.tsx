@@ -69,18 +69,30 @@ export default function UploadReceipt({
 	};
 
 	const onSubmit = async (data: UploadReceiptFormValues) => {
+		console.log("onSubmit called with data:", data);
+
 		if (data.file) {
+			console.log("File detected in form data:", data.file);
+
 			// Convert to base64 on the client side (like add-friend-form)
 			const base64Result = await new Promise<string>((resolve) => {
 				convertToBase64(data.file, (result) => {
 					const base64String = typeof result === 'string' ? result : result.base64;
+					console.log("Converted file to base64:", base64String.slice(0,100) + '...'); // log only first 100 chars
 					resolve(base64String);
 				});
 			});
+
+			console.log("Calling uploadReceipt with base64Result and friends:", data.friends);
 			await uploadReceipt(base64Result, data.friends);
+			console.log("uploadReceipt finished");
+		} else {
+			console.log("No file present in form data.");
 		}
+
 		setOpen(false);
 		form.reset();
+		console.log("Dialog closed and form reset.");
 	};
 
 	const handleDialogClose = () => {

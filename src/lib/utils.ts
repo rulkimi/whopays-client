@@ -50,17 +50,24 @@ export const convertToBase64 = (
 	file: { name: string; type: string; size: number; lastModified: number },
 	callback: (result: Base64FileResult) => void
 ) => {
+	console.log("convertToBase64 called with file:", file);
+
 	if (
 		typeof window === "undefined" ||
 		typeof window.File === "undefined" ||
 		typeof window.FileReader === "undefined" ||
 		!(file instanceof Object)
 	) {
+		console.error("File or FileReader is not defined in this environment.");
 		throw new ReferenceError("File or FileReader is not defined in this environment.");
 	}
 	const reader = new window.FileReader();
+	console.log("FileReader initialized.");
+
 	reader.onloadend = () => {
 		const base64String = reader.result as string;
+		console.log("Base64 conversion complete. Base64 string length:", base64String?.length);
+
 		const result: Base64FileResult = {
 			name: file.name,
 			type: file.type,
@@ -68,14 +75,19 @@ export const convertToBase64 = (
 			lastModified: file.lastModified,
 			base64: base64String,
 		};
+		console.log("Base64FileResult constructed:", result);
+
 		callback(result);
 	};
 	if (typeof reader.readAsDataURL === "function") {
+		console.log("Calling reader.readAsDataURL...");
 		reader.readAsDataURL(file as unknown as Blob);
 	} else {
+		console.error("readAsDataURL is not available in this environment.");
 		throw new ReferenceError("readAsDataURL is not available in this environment.");
 	}
 };
+
 
 export function base64ToFile(base64File: Base64File) {
 	const arr = base64File.base64.split(',');
