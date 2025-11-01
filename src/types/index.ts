@@ -30,6 +30,7 @@ export interface Receipt {
   total_amount: number;
   friends: Friend[];
   items: Item[];
+  subtotal: number;
 
   created_at: string;
   updated_at: string;

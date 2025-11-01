@@ -1,42 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { cn, formatCurrency, formatDateTime } from "@/lib/utils"
-import { Users } from "lucide-react"
-import FriendAvatar from "@/components/friend-avatar"
-import { AvatarGroup } from "@/components/ui/avatar"
-import ItemInfo from "./item-info"
-import ReceiptImage from "./receipt-image"
-import { Item, Friend, Receipt } from "@/types"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { cn, formatCurrency, formatDateTime } from "@/lib/utils";
+import { Users } from "lucide-react";
+import FriendAvatar from "@/components/friend-avatar";
+import { AvatarGroup } from "@/components/ui/avatar";
+import ItemInfo from "./item-info";
+import ReceiptImage from "./receipt-image";
+import { Item, Friend, Receipt } from "@/types";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface ReceiptPageClientProps {
-  receipt: Receipt
-  receiptId: string
+  receipt: Receipt;
+  receiptId: string;
 }
 
-export default function ReceiptPageClient({ receipt, receiptId }: ReceiptPageClientProps) {
+export default function ReceiptPageClient({
+  receipt,
+  receiptId,
+}: ReceiptPageClientProps) {
   // Create local state for items to allow updates when friends are added
-  const [items, setItems] = useState<Item[]>(receipt.items || [])
+  const [items, setItems] = useState<Item[]>(receipt.items || []);
 
   const persons =
     receipt.friends.length === 0
       ? "Just you"
       : `${receipt.friends.length} ${
           receipt.friends.length === 1 ? "person" : "persons"
-        }`
+        }`;
 
   // Callback to update item friends when they're updated
   const handleFriendsUpdated = (itemId: number, newFriends: Friend[]) => {
-    setItems(prevItems =>
-      prevItems.map(item =>
-        item.item_id === itemId
-          ? { ...item, friends: newFriends }
-          : item
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.item_id === itemId ? { ...item, friends: newFriends } : item
       )
-    )
-  }
+    );
+  };
 
   return (
     <div
@@ -126,12 +127,7 @@ export default function ReceiptPageClient({ receipt, receiptId }: ReceiptPageCli
                   Subtotal
                 </span>
                 <span className="tabular-nums font-semibold">
-                  {formatCurrency(
-                    receipt.total_amount -
-                      receipt.service_charge -
-                      receipt.tax,
-                    receipt.currency
-                  )}
+                  {formatCurrency(receipt.subtotal, receipt.currency)}
                 </span>
               </div>
             )}
@@ -144,9 +140,7 @@ export default function ReceiptPageClient({ receipt, receiptId }: ReceiptPageCli
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 uppercase tracking-wide">
-                Tax
-              </span>
+              <span className="text-gray-600 uppercase tracking-wide">Tax</span>
               <span className="tabular-nums font-semibold">
                 {formatCurrency(receipt.tax, receipt.currency)}
               </span>
@@ -189,6 +183,5 @@ export default function ReceiptPageClient({ receipt, receiptId }: ReceiptPageCli
         </div>
       </div>
     </div>
-  )
+  );
 }
-
