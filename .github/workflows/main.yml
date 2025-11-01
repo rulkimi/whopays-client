@@ -118,7 +118,7 @@ jobs:
             git fetch --all
             git reset --hard origin/main
             echo ">>> Restarting PM2 process..."
-            pm2 restart /root/sh/restart-whopays-client.sh
+            /root/sh/restart-whopays-client.sh
         continue-on-error: true
 
       # -------------------------------
