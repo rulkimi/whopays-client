@@ -1,0 +1,159 @@
+name: Deploy Whopays Client
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------
+      # Discord: Build Started
+      # -------------------------------
+      - name: Send build started message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 'Github Actions [Build]'
+          DISCORD_AVATAR: 'https://img.icons8.com/fluent-systems-filled/200/FFFFFF/github.png'
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: |
+            Build started for **${{ github.repository }}** (`${{ github.ref_name }}`)
+            [Commit](https://github.com/${{ github.repository }}/commit/${{ github.sha }}): *${{ github.event.head_commit.message }}* by **${{ github.event.head_commit.author.name }}**
+
+      # -------------------------------
+      # Checkout repo
+      # -------------------------------
+      - uses: actions/checkout@v4
+
+      # -------------------------------
+      # Create .env file
+      # -------------------------------
+      - name: Create .env file
+        run: |
+          echo "API_URL=${{ secrets.DEV_API_URL }}" >> .env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+
+      # -------------------------------
+      # Install dependencies
+      # -------------------------------
+      - name: Install dependencies
+        id: install
+        run: npm ci
+        continue-on-error: true
+
+      # -------------------------------
+      # Build Next.js app
+      # -------------------------------
+      - name: Build Next.js app
+        id: build
+        if: ${{ steps.install.outcome == 'success' }}
+        run: npm run build 2>&1 | tee build.log
+        continue-on-error: true
+
+      # -------------------------------
+      # Save and Upload Build Error Log
+      # -------------------------------
+      - name: Save build log on failure
+        if: ${{ steps.build.outcome == 'failure' }}
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          cp build.log build_error_${TIMESTAMP}.txt
+
+      - name: Upload build error log
+        if: ${{ steps.build.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-error-log-${{ github.run_number }}
+          path: build_error_*.txt
+          retention-days: 7
+
+      # -------------------------------
+      # Discord: Build Success
+      # -------------------------------
+      - name: Send build success message
+        if: ${{ steps.build.outcome == 'success' }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 'Github Actions [Build]'
+          DISCORD_AVATAR: 'https://img.icons8.com/fluent-systems-filled/200/FFFFFF/github.png'
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: |
+            **Build Successful** - Starting deployment for `whopays-client` on branch `${{ github.ref_name }}`
+
+      # -------------------------------
+      # Copy files to server via SCP
+      # -------------------------------
+      - name: Copy .next build to server
+        id: scp
+        if: ${{ steps.build.outcome == 'success' }}
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: './.next'
+          target: '/root/projects/whopays-client'
+        continue-on-error: true
+
+      # -------------------------------
+      # SSH: Git pull + Restart PM2
+      # -------------------------------
+      - name: Git pull + Restart PM2 on server
+        id: pm2
+        if: ${{ steps.build.outcome == 'success' && steps.scp.outcome == 'success' }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /root/projects/whopays-client
+            echo ">>> Pull latest non-build files..."
+            git fetch --all
+            git reset --hard origin/main
+            echo ">>> Restarting PM2 process..."
+            pm2 restart /root/sh/restart-whopays-client.sh
+        continue-on-error: true
+
+      # -------------------------------
+      # Set Deployment Status
+      # -------------------------------
+      - name: Set deployment status
+        if: ${{ always() }}
+        id: deployment_status
+        run: |
+          if [[ "${{ steps.install.outcome }}" == "failure" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "message=❌ Dev Deployment Failed - Dependency Installation" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.build.outcome }}" == "failure" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "message=❌ Dev Deployment Failed - Build Error" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.scp.outcome }}" == "failure" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "message=❌ Dev Deployment Failed - File Transfer" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.pm2.outcome }}" == "failure" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "message=❌ Dev Deployment Failed - Service Restart" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ Dev Deployment Complete!" >> $GITHUB_OUTPUT
+
+      # -------------------------------
+      # Discord: Final Deployment Status
+      # -------------------------------
+      - name: Send final deployment status
+        if: ${{ always() }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 'Github Actions [Build]'
+          DISCORD_AVATAR: 'https://img.icons8.com/fluent-systems-filled/200/FFFFFF/github.png'
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: |
+            ${{ steps.deployment_status.outputs.message }}
+            ${{ steps.deployment_status.outputs.status == 'failed' && 'Check GitHub Actions logs for details.' || '' }}
