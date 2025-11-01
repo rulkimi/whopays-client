@@ -8,10 +8,17 @@ import {
 import ReceiptList from "../receipts/_components/receipt-list";
 import HomeFriendsList from "./_components/home-friends-list";
 import UploadReceipt from "./_components/action-buttons/upload-receipt";
-import { DashboardData } from "@/types";
 
 export default async function HomePage() {
-  const dashboard: DashboardData = await fetchDashboard();
+  const result = await fetchDashboard();
+
+  if (!result.success) {
+    // TODO: handle page error
+    return "Error"
+  }
+
+  const dashboard = result.data;
+  
   return (
     <PageLayout>
       <PageHeader>

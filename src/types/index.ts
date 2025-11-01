@@ -80,7 +80,7 @@ export interface ReceiptSplitsItem {
   item_name: string;
   quantity: number;
   unit_price: number;
-  variations: unknown[]; // structure not used here; keeping as unknown to match payload
+  variations: Variation[]; 
   unit_total: number;
   line_total: number;
   friends: ReceiptSplitsItemFriendShare[];
