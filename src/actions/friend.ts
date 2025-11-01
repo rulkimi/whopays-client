@@ -32,3 +32,14 @@ export async function createFriend(
 		return { data: null, error: (error && typeof error === "object" && "message" in error) ? (error as { message: string }).message : "Unknown error" };
 	}
 }
+
+export async function getFriends() {
+	try {
+		const api = await getApiClient();
+		const response = await api.get("/friends");
+		return { data: response.data, error: null };
+	} catch (error) {
+		console.error("Error fetching friends:", error);
+		return { data: null, error: (error && typeof error === "object" && "message" in error) ? (error as { message: string }).message : "Unknown error" };
+	}
+}
