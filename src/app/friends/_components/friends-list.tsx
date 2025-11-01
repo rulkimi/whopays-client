@@ -1,5 +1,3 @@
-"use client";
-
 import { getFriends } from "@/actions/friend";
 import FriendAvatar from "@/components/friend-avatar";
 import {
@@ -11,6 +9,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { Friend } from "@/types"; // Added import for Friend type
 
 export default async function FriendsList() {
   const { data: friends, error } = await getFriends();
@@ -43,6 +42,9 @@ export default async function FriendsList() {
     );
   }
 
+  // Ensure that friends is typed as Friend[]
+  const typedFriends = friends as Friend[];
+
   return (
     <Section>
       <SectionHeader>
@@ -50,16 +52,16 @@ export default async function FriendsList() {
       </SectionHeader>
       <SectionContent>
         <div className="flex flex-col gap-2">
-          {friends.map((friend: any, idx: number) => {
-            const length = friends.length;
+          {typedFriends.map((friend: Friend, idx: number) => {
+            const length = typedFriends.length;
             const cardClass = cn(
               "rounded-none border-t-0 border-b-0 gap-0",
-              length === 1 && "rounded-2xl border-t border-b",
-              length === 2 && idx === 0 && "rounded-t-2xl border-t border-b",
-              length === 2 && idx === 1 && "rounded-b-2xl border-b",
-              length > 2 && idx === 0 && "rounded-t-2xl border-t",
-              length > 2 && idx === length - 1 && "rounded-b-2xl border-b",
-              length > 2 && idx !== length - 1 && "border-b"
+              length === 1 ? "rounded-2xl border-t border-b" : "",
+              length === 2 && idx === 0 ? "rounded-t-2xl border-t border-b" : "",
+              length === 2 && idx === 1 ? "rounded-b-2xl border-b" : "",
+              length > 2 && idx === 0 ? "rounded-t-2xl border-t" : "",
+              length > 2 && idx === length - 1 ? "rounded-b-2xl border-b" : "",
+              length > 2 && idx !== length - 1 ? "border-b" : ""
             );
             return (
               <Card
@@ -75,12 +77,6 @@ export default async function FriendsList() {
                     <span>{friend.name}</span>
                   </CardTitle>
                 </CardHeader>
-                {friend.phone || friend.email ? (
-                  <CardContent className="text-muted-foreground text-sm pt-0 px-6 pb-3">
-                    {friend.phone && <div className="truncate">{friend.phone}</div>}
-                    {friend.email && <div className="truncate">{friend.email}</div>}
-                  </CardContent>
-                ) : null}
               </Card>
             );
           })}
