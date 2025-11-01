@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn, compressImage } from "@/lib/utils";
 import FriendAvatar from "@/components/friend-avatar";
 import { Friend } from "@/types";
 import { toast } from "sonner";
@@ -70,8 +70,33 @@ export default function UploadReceipt({ friends }: { friends: Friend[] }) {
   const onSubmit = async (data: UploadReceiptFormValues) => {
     try {
       if (data.file) {
+        let fileToUpload = data.file;
+        const originalSizeMB = fileToUpload.size / (1024 * 1024);
+
+        // Compress if file is larger than 2MB
+        if (fileToUpload.size > 2 * 1024 * 1024) {
+          toast.info(`Compressing image (${originalSizeMB.toFixed(2)}MB)...`);
+          try {
+            fileToUpload = await compressImage(fileToUpload, 2);
+            const newSizeMB = fileToUpload.size / (1024 * 1024);
+            if (newSizeMB < originalSizeMB) {
+              toast.success(
+                `Image compressed from ${originalSizeMB.toFixed(
+                  2
+                )}MB to ${newSizeMB.toFixed(2)}MB`
+              );
+            }
+          } catch (compressError) {
+            console.warn(
+              "Failed to compress image, uploading original:",
+              compressError
+            );
+            toast.warning("Could not compress image, uploading original file");
+          }
+        }
+
         const formData = new FormData();
-        formData.append("file", data.file);
+        formData.append("file", fileToUpload);
         data.friends.forEach((id) => {
           formData.append("friend_ids", id.toString());
         });
@@ -82,8 +107,18 @@ export default function UploadReceipt({ friends }: { friends: Friend[] }) {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to upload receipt");
+          // Try to parse error response
+          let errorMessage = "Failed to upload receipt";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            // If response is not JSON (e.g., HTML error page from proxy)
+            if (response.status === 413) {
+              errorMessage = "File is too large. Please try a smaller image.";
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         toast.success("Receipt uploaded successfully");
@@ -179,8 +214,16 @@ export default function UploadReceipt({ friends }: { friends: Friend[] }) {
                       />
                     </FormControl>
                     {file && (
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        Selected: {file.name}
+                      <div className="mt-2 text-sm text-muted-foreground space-y-1">
+                        <div>Selected: {file.name}</div>
+                        <div>
+                          Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+                          {file.size > 2 * 1024 * 1024 && (
+                            <span className="ml-2 text-orange-500">
+                              (will be compressed)
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
                     <FormMessage />
