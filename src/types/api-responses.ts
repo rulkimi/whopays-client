@@ -1,6 +1,6 @@
 import { DashboardData } from ".";
 
-export interface ApiResponse<T> {
+interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T

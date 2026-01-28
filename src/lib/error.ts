@@ -1,10 +1,14 @@
-import { ApiResponse } from "@/types/api-responses";
+type ErrorResponse = {
+  success: false;
+  message: string;
+  data: undefined;
+};
 
 /**
  * Extracts a safe and descriptive error message from any thrown error,
  * and returns a typed error response.
  */
-export function getErrorResponse<T>(error: unknown): ApiResponse<T> {
+export function getErrorResponse(error: unknown): ErrorResponse {
   let message = "An unknown error occurred.";
 
   if (typeof error === "string") {
@@ -20,6 +24,6 @@ export function getErrorResponse<T>(error: unknown): ApiResponse<T> {
   return {
     success: false,
     message,
-    data: undefined as unknown as T,
+    data: undefined,
   };
 }

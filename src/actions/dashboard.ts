@@ -1,15 +1,15 @@
  "use server"
 
 import { revalidatePath } from "next/cache";
+import { getApiClient } from "./api";
 import { getAccessToken } from "@/lib/session";
 import { getErrorResponse } from "@/lib/error";
-import { DashboardResponse } from "@/types/api-responses";
 
 export async function refreshDashboardData() {
   revalidatePath("/home");
 }
 
-export const fetchDashboard = async (): Promise<DashboardResponse> => {
+export const fetchDashboard = async () => {
 	// const api = await getApiClient();
   const token = await getAccessToken();
   const url = `${process.env.API_URL}/dashboard`;
@@ -22,12 +22,11 @@ export const fetchDashboard = async (): Promise<DashboardResponse> => {
     });
 
     const data = await response.json();
-
-    if (!data.success) {
-      return getErrorResponse(data.message);
+    return {
+      success: true,
+      message: "Fetched dashboard data successfully.",
+      data: data
     }
-
-    return data;
   } catch (error) {
     return getErrorResponse(error);
   }

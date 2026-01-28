@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Maximize, Zap } from "lucide-react";
-import Link from "next/link";
 
 const HERO_STATS = [
   {
@@ -46,11 +45,9 @@ export default function HeroSection() {
             </h2>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center mt-3 sm:mt-0 w-full sm:w-auto">
-            <Button asChild size="xl" className="text-lg sm:text-xl w-full sm:w-auto">
-              <Link href="/login">
-                Start Splitting
-                <ArrowRight className="ml-2 size-5 sm:size-6" />
-              </Link>
+            <Button size="xl" className="text-lg sm:text-xl w-full sm:w-auto">
+              Start Splitting
+              <ArrowRight className="ml-2 size-5 sm:size-6" />
             </Button>
             <Button variant="outline" size="xl" className="text-lg sm:text-xl w-full sm:w-auto">
               <Maximize className="mr-2 size-5 sm:size-6" />
