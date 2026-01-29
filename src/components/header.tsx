@@ -12,10 +12,15 @@ import {
 } from "./ui/sheet";
 import { Menu } from "lucide-react";
 
-const NAV_MENUS = [
-  { label: "Features", href: "/features" },
-  { label: "How it Works", href: "/how-it-works" },
-  { label: "API docs", href: "/api/docs" },
+// const NAV_MENUS = [
+//   { label: "Features", href: "/features" },
+//   { label: "How it Works", href: "/how-it-works" },
+//   { label: "API docs", href: "/api/docs" },
+// ];
+const NAV_MENUS: { label: string; href: string }[] = [
+  // { label: "Features", href: "/features" },
+  // { label: "How it Works", href: "/how-it-works" },
+  // { label: "API docs", href: "/api/docs" }
 ];
 
 export default function Header() {
