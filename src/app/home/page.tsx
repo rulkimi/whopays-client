@@ -26,11 +26,11 @@ export default async function HomePage() {
       </PageHeader>
       <PageContent className="space-y-4">
         <div>
-          <UploadReceipt friends={dashboard.friends} />
+          <UploadReceipt friends={dashboard.friends || []} />
         </div>
-        <HomeFriendsList friends={dashboard.friends} />
+        <HomeFriendsList friends={dashboard.friends || []} />
         <ReceiptList
-          receipts={dashboard.receipts} 
+          receipts={dashboard.receipts || []} 
           href="/receipts"
         />
       </PageContent>
