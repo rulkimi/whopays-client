@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
-  serverActions: {
-    bodySizeLimit: "100mb",
+const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+    },
   },
+  outputFileTracingRoot: __dirname,
   images: {
-    domains: ["127.0.0.1", "bucket.railway.internal"],
+    remotePatterns: [
+      { hostname: "127.0.0.1" },
+      { hostname: "bucket.railway.internal" },
+    ],
   },
 };
+
+module.exports = nextConfig;
