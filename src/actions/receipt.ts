@@ -7,14 +7,14 @@ import { ReceiptSplitsResponse } from "@/types";
 export async function fetchReceipts() {
   const api = await getApiClient();
   const response = await api.get("/receipts");
-  return response.data;
+  return response.data.data;
 }
 
 export async function fetchReceiptById(receiptId: string): Promise<Receipt> {
   try {
     const api = await getApiClient();
     const response = await api.get(`/receipts/${receiptId}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.log(error);
     throw error;
@@ -27,7 +27,7 @@ export async function fetchReceiptSplits(
   try {
     const api = await getApiClient();
     const response = await api.get(`/receipts/${receiptId}/splits`);
-    return response.data as ReceiptSplitsResponse;
+    return response.data.data as ReceiptSplitsResponse;
   } catch (error) {
     console.log(error);
     throw error;
@@ -69,7 +69,7 @@ export async function uploadReceipt(file: string, friend_ids: number[]) {
     console.log("Posting formData to /receipts");
     const response = await api.post("/receipts", formData);
     console.log("DEBUG: Upload receipt response:", response);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error uploading receipt:", error);
     throw error;
@@ -80,7 +80,7 @@ export async function deleteReceipt(receiptId: number) {
 	try {
 		const api = await getApiClient();
 		const response = await api.delete(`/receipts/${receiptId}`);
-		return response.data;
+		return response.data.data;
 	} catch (error: unknown) {
 		if (
 			typeof error === "object" &&

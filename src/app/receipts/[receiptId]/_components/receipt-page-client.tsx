@@ -23,11 +23,12 @@ export default function ReceiptPageClient({
   // Create local state for items to allow updates when friends are added
   const [items, setItems] = useState<Item[]>(receipt.items || []);
 
+  const friendsList = receipt.friends || [];
   const persons =
-    receipt.friends.length === 0
+    friendsList.length === 0
       ? "Just you"
-      : `${receipt.friends.length} ${
-          receipt.friends.length === 1 ? "person" : "persons"
+      : `${friendsList.length} ${
+          friendsList.length === 1 ? "person" : "persons"
         }`;
 
   // Callback to update item friends when they're updated
@@ -88,9 +89,9 @@ export default function ReceiptPageClient({
         <div className="flex items-center justify-center gap-3 text-sm text-gray-600">
           <Users className="size-4" />
           <span className="font-medium">{persons}</span>
-          {receipt.friends.length > 0 && (
+          {friendsList.length > 0 && (
             <AvatarGroup>
-              {receipt.friends.map((friend) => (
+              {friendsList.map((friend) => (
                 <FriendAvatar key={friend.id} friend={friend} />
               ))}
             </AvatarGroup>
@@ -109,7 +110,7 @@ export default function ReceiptPageClient({
                   key={item.item_id}
                   item={item}
                   currency={receipt.currency}
-                  allFriends={receipt.friends}
+                  allFriends={friendsList}
                   onFriendsUpdated={handleFriendsUpdated}
                 />
               ))}

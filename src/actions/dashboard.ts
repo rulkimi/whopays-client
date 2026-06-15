@@ -21,7 +21,7 @@ export const fetchDashboard = async () => {
     return {
       success: true,
       message: "Fetched dashboard data successfully.",
-      data: response.data,
+      data: response.data.data,
     };
   } catch (error) {
     console.error("Error fetching dashboard data:", error);

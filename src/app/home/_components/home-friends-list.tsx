@@ -82,6 +82,11 @@ export default function HomeFriendsList({
 								{friends.map((friend) => (
 									<FriendAvatar key={friend.id} friend={friend} />
 								))}
+								{friends.length === 0 && (
+									<span className="text-muted-foreground text-sm flex items-center h-8 ml-2">
+										No friends yet. Add some!
+									</span>
+								)}
 							</AvatarGroup>
 						</div>
 					</CardContent>

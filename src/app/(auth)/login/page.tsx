@@ -12,7 +12,12 @@ export default async function LoginPage() {
 
   return (
     <AuthCard>
-      <LoginForm />
+      <div className="text-center py-6 px-2">
+        <h2 className="text-xl font-semibold mb-2">Temporarily Unavailable</h2>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          Login is currently disabled for maintenance. We are working on a fix and will be back soon!
+        </p>
+      </div>
     </AuthCard>
   );
 }

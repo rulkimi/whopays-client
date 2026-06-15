@@ -42,14 +42,20 @@ export default function ReceiptList({ receipts, href = "" }: ReceiptListProps) {
 				</Link>
 			</SectionHeader>
 			<SectionContent>
-				{receipts.map((receipt, idx) => (
-					<ReceiptCard
-						key={receipt.id}
-						index={idx}
-						length={receipts.length}
-						receipt={receipt}
-					/>
-				))}
+				{receipts.length === 0 ? (
+					<div className="text-muted-foreground text-sm p-4 text-center border rounded-xl bg-card shadow-sm">
+						No receipts found.
+					</div>
+				) : (
+					receipts.map((receipt, idx) => (
+						<ReceiptCard
+							key={receipt.id}
+							index={idx}
+							length={receipts.length}
+							receipt={receipt}
+						/>
+					))
+				)}
 			</SectionContent>
 		</Section>
 	);

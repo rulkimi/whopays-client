@@ -61,7 +61,7 @@ export async function addFriendsToItem(
 			friend_ids,
 		})
 		console.log(response)
-		return response.data
+		return response.data.data
 	} catch (error) {
 		return {
 			success: false,
@@ -79,7 +79,7 @@ export async function addFriendsToMultipleItems(
 		const response = await api.post("/items/add-friends-multiple", {
 			items,
 		})
-		return response.data
+		return response.data.data
 	} catch (error) {
 		const errorArray = extractErrorArray(error)
 		if (errorArray) {
